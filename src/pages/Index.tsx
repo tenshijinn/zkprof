@@ -37,6 +37,48 @@ const Index = () => {
     };
   }, []);
 
+  const applyScrambleEffect = (ctx: CanvasRenderingContext2D, width: number, height: number) => {
+    const imageData = ctx.getImageData(0, 0, width, height);
+    const data = imageData.data;
+    
+    // Apply pixelation/scramble effect
+    const blockSize = 8;
+    
+    for (let y = 0; y < height; y += blockSize) {
+      for (let x = 0; x < width; x += blockSize) {
+        // Get average color of block
+        let r = 0, g = 0, b = 0, count = 0;
+        
+        for (let by = 0; by < blockSize && y + by < height; by++) {
+          for (let bx = 0; bx < blockSize && x + bx < width; bx++) {
+            const i = ((y + by) * width + (x + bx)) * 4;
+            r += data[i];
+            g += data[i + 1];
+            b += data[i + 2];
+            count++;
+          }
+        }
+        
+        r = Math.floor(r / count);
+        g = Math.floor(g / count);
+        b = Math.floor(b / count);
+        
+        // Fill block with average color + noise
+        for (let by = 0; by < blockSize && y + by < height; by++) {
+          for (let bx = 0; bx < blockSize && x + bx < width; bx++) {
+            const i = ((y + by) * width + (x + bx)) * 4;
+            const noise = (Math.random() - 0.5) * 30;
+            data[i] = Math.max(0, Math.min(255, r + noise));
+            data[i + 1] = Math.max(0, Math.min(255, g + noise));
+            data[i + 2] = Math.max(0, Math.min(255, b + noise));
+          }
+        }
+      }
+    }
+    
+    ctx.putImageData(imageData, 0, 0);
+  };
+
   const takePhoto = () => {
     if (videoRef.current && canvasRef.current) {
       const canvas = canvasRef.current;
@@ -46,6 +88,8 @@ const Index = () => {
       const ctx = canvas.getContext("2d");
       if (ctx) {
         ctx.drawImage(video, 0, 0);
+        // Apply scrambling effect
+        applyScrambleEffect(ctx, canvas.width, canvas.height);
         setHasPhoto(true);
         setState("photo-taken");
       }
