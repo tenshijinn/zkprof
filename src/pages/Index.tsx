@@ -160,14 +160,14 @@ const Index = () => {
         {/* Main Content */}
         <div className="w-full flex flex-col items-center space-y-6">
           {/* Title */}
-          <div className="text-center space-y-2">
-            <h2 className="text-2xl font-semibold">
+          <div className="text-center space-y-1">
+            <h2 className="text-2xl font-semibold text-secondary">
               {state === "success" ? "zPFP Created" : "Take an Encrypted Photo"}
             </h2>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-secondary">
               {state === "success"
                 ? "Your encrypted profile photo is ready"
-                : "Private data stays on your device. Only ZK • Tech"}
+                : "Permit decrypt to any entity with ZK + NDA"}
             </p>
           </div>
 
@@ -213,21 +213,32 @@ const Index = () => {
 
           {/* Buttons */}
           {state !== "success" && (
-            <div className="w-full space-y-4">
-              <Button
-                onClick={takePhoto}
-                disabled={state !== "idle" && state !== "photo-taken"}
-                className="w-full h-12 rounded-2xl btn-primary font-medium text-base"
-              >
-                Take a Photo
-              </Button>
-              <Button
-                onClick={encryptAndMint}
-                disabled={!hasPhoto || state !== "photo-taken"}
-                className="w-full h-12 rounded-2xl btn-secondary font-medium text-base disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Encrypt & Mint
-              </Button>
+            <div className="w-full space-y-3">
+              <div className="flex gap-3">
+                <Button
+                  onClick={takePhoto}
+                  disabled={state !== "idle" && state !== "photo-taken"}
+                  variant="outline"
+                  className="flex-1 h-12 rounded-xl font-medium text-base border-2 border-muted hover:bg-muted/10"
+                >
+                  Take a Photo
+                </Button>
+                <Button
+                  onClick={encryptAndMint}
+                  disabled={!hasPhoto || state !== "photo-taken"}
+                  className="flex-1 h-12 rounded-xl btn-secondary font-medium text-base disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Encrypt & Mint
+                </Button>
+              </div>
+              {hasPhoto && state === "photo-taken" && (
+                <div className="flex items-center justify-center gap-2 text-accent text-sm font-medium">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                  </svg>
+                  Uploaded
+                </div>
+              )}
             </div>
           )}
 
@@ -250,10 +261,12 @@ const Index = () => {
           {/* Progress Bar */}
           {(state === "encrypting" || state === "minting" || state === "success") && (
             <div className="w-full space-y-2">
-              <Progress
-                value={progress}
-                className="h-2 bg-muted progress-glow"
-              />
+              <div className="w-full h-2 bg-muted/20 rounded-full overflow-hidden border border-muted">
+                <div 
+                  className="h-full bg-secondary transition-all duration-300"
+                  style={{ width: `${progress}%` }}
+                />
+              </div>
               <p className="text-sm text-center text-secondary font-medium">
                 {getStatusText()}
               </p>
