@@ -9,8 +9,10 @@ const Index = () => {
   const [progress, setProgress] = useState(0);
   const [hasPhoto, setHasPhoto] = useState(false);
   const [stream, setStream] = useState<MediaStream | null>(null);
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     // Initialize camera
@@ -38,6 +40,15 @@ const Index = () => {
   }, []);
 
   const [isHovering, setIsHovering] = useState(false);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!containerRef.current || !hasPhoto) return;
+    const rect = containerRef.current.getBoundingClientRect();
+    setMousePos({
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top,
+    });
+  };
 
   const takePhoto = () => {
     if (videoRef.current && canvasRef.current) {
@@ -118,9 +129,11 @@ const Index = () => {
 
           {/* Camera Preview */}
           <div 
+            ref={containerRef}
             className="relative camera-preview w-[300px] h-[380px] bg-muted/20"
             onMouseEnter={() => setIsHovering(true)}
             onMouseLeave={() => setIsHovering(false)}
+            onMouseMove={handleMouseMove}
           >
             <video
               ref={videoRef}
@@ -137,8 +150,20 @@ const Index = () => {
                 hasPhoto ? "" : "hidden"
               }`}
             />
-            {hasPhoto && !isHovering && (
-              <div className="absolute inset-0 bg-black/80 backdrop-blur-md transition-opacity duration-300" />
+            {hasPhoto && (
+              <div 
+                className="absolute inset-0 bg-black/80 backdrop-blur-md transition-all duration-75"
+                style={{
+                  maskImage: isHovering
+                    ? `radial-gradient(circle 80px at ${mousePos.x}px ${mousePos.y}px, transparent 0%, transparent 60px, black 80px)`
+                    : 'none',
+                  WebkitMaskImage: isHovering
+                    ? `radial-gradient(circle 80px at ${mousePos.x}px ${mousePos.y}px, transparent 0%, transparent 60px, black 80px)`
+                    : 'none',
+                }}
+              >
+                <div className="absolute inset-0 opacity-30 noise-texture" />
+              </div>
             )}
             {state === "success" && (
               <div className="absolute inset-0 flex items-center justify-center bg-black/40">

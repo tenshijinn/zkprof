@@ -17,7 +17,7 @@ All colors MUST be HSL.
     --popover: 0 0% 0%;
     --popover-foreground: 60 9% 97%;
 
-    --primary: 162 63% 20%;
+    --primary: 359 81% 63%;
     --primary-foreground: 60 9% 97%;
 
     --secondary: 359 81% 63%;
@@ -38,7 +38,7 @@ All colors MUST be HSL.
 
     --radius: 1.25rem;
 
-    --glow-primary: 162 63% 20%;
+    --glow-primary: 359 81% 63%;
     --glow-accent: 100 50% 88%;
     --glow-secondary: 359 81% 63%;
   }
@@ -85,5 +85,23 @@ All colors MUST be HSL.
 
   .progress-glow {
     box-shadow: 0 0 15px hsla(var(--glow-secondary) / 0.6);
+  }
+
+  .noise-texture {
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='2.5' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    animation: noise 0.2s steps(10) infinite;
+  }
+
+  @keyframes noise {
+    0%, 100% { transform: translate(0, 0); }
+    10% { transform: translate(-5%, -5%); }
+    20% { transform: translate(-10%, 5%); }
+    30% { transform: translate(5%, -10%); }
+    40% { transform: translate(-5%, 15%); }
+    50% { transform: translate(-10%, 5%); }
+    60% { transform: translate(15%, 0); }
+    70% { transform: translate(0, 10%); }
+    80% { transform: translate(-15%, 0); }
+    90% { transform: translate(10%, 5%); }
   }
 }
