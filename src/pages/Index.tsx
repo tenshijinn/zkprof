@@ -9,10 +9,9 @@ const Index = () => {
   const [progress, setProgress] = useState(0);
   const [hasPhoto, setHasPhoto] = useState(false);
   const [stream, setStream] = useState<MediaStream | null>(null);
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const [photoDataUrl, setPhotoDataUrl] = useState("");
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     // Initialize camera
@@ -39,26 +38,16 @@ const Index = () => {
     };
   }, []);
 
-  const [isHovering, setIsHovering] = useState(false);
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!containerRef.current || !hasPhoto) return;
-    const rect = containerRef.current.getBoundingClientRect();
-    setMousePos({
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top,
-    });
-  };
-
   const takePhoto = () => {
     if (videoRef.current && canvasRef.current) {
       const canvas = canvasRef.current;
       const video = videoRef.current;
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-      const ctx = canvas.getContext("2d");
-      if (ctx) {
-        ctx.drawImage(video, 0, 0);
+      const context = canvas.getContext("2d");
+      
+      if (context) {
+        context.drawImage(video, 0, 0, 300, 380);
+        const dataUrl = canvas.toDataURL();
+        setPhotoDataUrl(dataUrl);
         setHasPhoto(true);
         setState("photo-taken");
       }
@@ -67,8 +56,15 @@ const Index = () => {
 
   const retakePhoto = () => {
     setHasPhoto(false);
+    setPhotoDataUrl("");
     setState("idle");
-    setIsHovering(false);
+    setProgress(0);
+    if (canvasRef.current) {
+      const context = canvasRef.current.getContext("2d");
+      if (context) {
+        context.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+      }
+    }
   };
 
   const encryptAndMint = async () => {
@@ -128,42 +124,27 @@ const Index = () => {
           </div>
 
           {/* Camera Preview */}
-          <div 
-            ref={containerRef}
-            className="relative camera-preview w-[300px] h-[380px] bg-muted/20"
-            onMouseEnter={() => setIsHovering(true)}
-            onMouseLeave={() => setIsHovering(false)}
-            onMouseMove={handleMouseMove}
-          >
+          <div className="relative camera-preview w-[300px] h-[380px] bg-muted/20">
             <video
               ref={videoRef}
               autoPlay
               playsInline
               muted
-              className={`w-full h-full object-cover ${
-                hasPhoto ? "hidden" : ""
-              }`}
+              className={`w-full h-full object-cover ${hasPhoto ? "hidden" : ""}`}
             />
             <canvas
               ref={canvasRef}
-              className={`w-full h-full object-cover ${
-                hasPhoto ? "" : "hidden"
-              }`}
+              width="300"
+              height="380"
+              className="hidden"
             />
             {hasPhoto && (
               <div 
-                className="absolute inset-0 bg-black/80 backdrop-blur-md transition-all duration-75"
+                className="absolute inset-0 night-vision-effect"
                 style={{
-                  maskImage: isHovering
-                    ? `radial-gradient(circle 80px at ${mousePos.x}px ${mousePos.y}px, transparent 0%, transparent 60px, black 80px)`
-                    : 'none',
-                  WebkitMaskImage: isHovering
-                    ? `radial-gradient(circle 80px at ${mousePos.x}px ${mousePos.y}px, transparent 0%, transparent 60px, black 80px)`
-                    : 'none',
-                }}
-              >
-                <div className="absolute inset-0 opacity-30 noise-texture" />
-              </div>
+                  '--bg-image': `url(${photoDataUrl})`
+                } as React.CSSProperties}
+              />
             )}
             {state === "success" && (
               <div className="absolute inset-0 flex items-center justify-center bg-black/40">
