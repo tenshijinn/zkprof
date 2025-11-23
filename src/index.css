@@ -58,7 +58,7 @@ All colors MUST be HSL.
 @layer components {
   .camera-preview {
     @apply relative rounded-3xl overflow-hidden;
-    border: 1px solid #ed565a;
+    border: 1px solid #3a3a3a;
   }
 
   .btn-primary {

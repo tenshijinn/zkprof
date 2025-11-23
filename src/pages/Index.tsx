@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import faceGuide from "@/assets/pfp-guide.png";
 
 type AppState = "idle" | "photo-taken" | "encrypting" | "minting" | "success";
 
@@ -10,9 +11,12 @@ const Index = () => {
   const [hasPhoto, setHasPhoto] = useState(false);
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [photoDataUrl, setPhotoDataUrl] = useState("");
+  const [fps, setFps] = useState(0);
+  const [currentTime, setCurrentTime] = useState(new Date());
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const pixelationCanvasRef = useRef<HTMLCanvasElement>(null);
+  const fpsCounterRef = useRef({ frames: 0, lastTime: Date.now() });
 
   useEffect(() => {
     // Initialize camera
@@ -81,6 +85,39 @@ const Index = () => {
     };
   }, [state]);
 
+  // FPS counter
+  useEffect(() => {
+    if (state !== "idle") return;
+
+    const updateFps = () => {
+      fpsCounterRef.current.frames++;
+      const now = Date.now();
+      const delta = now - fpsCounterRef.current.lastTime;
+
+      if (delta >= 1000) {
+        setFps(Math.round((fpsCounterRef.current.frames * 1000) / delta));
+        fpsCounterRef.current.frames = 0;
+        fpsCounterRef.current.lastTime = now;
+      }
+
+      if (state === "idle") {
+        requestAnimationFrame(updateFps);
+      }
+    };
+
+    const animationId = requestAnimationFrame(updateFps);
+    return () => cancelAnimationFrame(animationId);
+  }, [state]);
+
+  // Current time updater
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
   const takePhoto = () => {
     if (videoRef.current && canvasRef.current) {
       const canvas = canvasRef.current;
@@ -88,7 +125,24 @@ const Index = () => {
       const context = canvas.getContext("2d");
       
       if (context) {
+        // Draw the video frame
         context.drawImage(video, 0, 0, 300, 380);
+        
+        // Draw the timestamp on the photo
+        context.fillStyle = '#ffffff';
+        context.font = '10px monospace';
+        context.textAlign = 'right';
+        const timeString = currentTime.toLocaleString('en-US', {
+          month: '2-digit',
+          day: '2-digit',
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+          hour12: false
+        });
+        context.fillText(timeString, 290, 370);
+        
         const dataUrl = canvas.toDataURL();
         setPhotoDataUrl(dataUrl);
         setHasPhoto(true);
@@ -181,6 +235,35 @@ const Index = () => {
               height="380"
               className={`absolute inset-0 w-full h-full ${hasPhoto ? "hidden" : ""}`}
             />
+            
+            {/* Face Guide Overlay - only in pre-photo state */}
+            {state === "idle" && (
+              <img 
+                src={faceGuide} 
+                alt="Face guide" 
+                className="absolute inset-0 w-full h-full object-contain pointer-events-none opacity-80"
+              />
+            )}
+            
+            {/* FPS Counter - only in pre-photo state */}
+            {state === "idle" && (
+              <div className="absolute top-2 left-2 text-[10px] font-mono text-white bg-black/50 px-2 py-1 rounded">
+                {fps} FPS
+              </div>
+            )}
+            
+            {/* Date/Time Display - always visible, gets captured */}
+            <div className="absolute bottom-2 right-2 text-[10px] font-mono text-white bg-black/50 px-2 py-1 rounded">
+              {currentTime.toLocaleString('en-US', {
+                month: '2-digit',
+                day: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: false
+              })}
+            </div>
             <canvas
               ref={canvasRef}
               width="300"
@@ -226,7 +309,7 @@ const Index = () => {
                   onClick={hasPhoto ? retakePhoto : takePhoto}
                   disabled={state !== "idle" && state !== "photo-taken"}
                   variant="outline"
-                  className="flex-1 h-12 rounded-xl font-medium text-base border-2 border-muted hover:border-[#ed565a] hover:text-[#ed565a]"
+                  className="flex-1 h-12 rounded-xl font-medium text-base border-2 border-[#ed565a] hover:bg-transparent hover:border-[#ed565a] hover:text-[#ed565a]"
                 >
                   {hasPhoto ? "Retake Photo" : "Take a Photo"}
                 </Button>
