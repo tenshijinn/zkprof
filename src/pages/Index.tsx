@@ -203,7 +203,7 @@ const Index = () => {
       <div className="w-full max-w-[500px] flex flex-col items-center space-y-8">
         {/* Logo */}
         <div className="self-start">
-          <h1 className="text-2xl font-medium tracking-tight">zPFP</h1>
+          <h1 className="text-2xl font-medium tracking-tight">zkProf</h1>
         </div>
 
         {/* Main Content */}
@@ -309,14 +309,14 @@ const Index = () => {
                   onClick={hasPhoto ? retakePhoto : takePhoto}
                   disabled={state !== "idle" && state !== "photo-taken"}
                   variant="outline"
-                  className="flex-1 h-12 rounded-xl font-medium text-base border-2 border-[#ed565a] hover:bg-transparent hover:border-[#ed565a] hover:text-[#ed565a]"
+                  className="flex-1 h-12 rounded-xl font-medium text-base border-2 border-muted text-[#ed565a] hover:bg-transparent hover:border-[#F0E3C3] hover:text-[#F0E3C3]"
                 >
                   {hasPhoto ? "Retake Photo" : "Take a Photo"}
                 </Button>
                 <Button
                   onClick={encryptAndMint}
                   disabled={!hasPhoto || state !== "photo-taken"}
-                  className="flex-1 h-12 rounded-xl btn-secondary font-medium text-base disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-1 h-12 rounded-xl font-medium text-base bg-secondary text-[#181818] border-2 border-secondary hover:bg-transparent hover:text-[#ed565a] hover:border-[#ed565a] disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Encrypt & Mint
                 </Button>
