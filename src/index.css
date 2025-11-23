@@ -47,11 +47,11 @@ All colors MUST be HSL.
 @layer base {
   * {
     @apply border-border;
+    font-family: 'Consolas', 'Courier New', monospace;
   }
 
   body {
     @apply bg-background text-foreground antialiased;
-    font-family: 'Consolas', 'Courier New', monospace;
   }
 }
 

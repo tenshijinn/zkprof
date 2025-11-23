@@ -309,7 +309,7 @@ const Index = () => {
                   onClick={hasPhoto ? retakePhoto : takePhoto}
                   disabled={state !== "idle" && state !== "photo-taken"}
                   variant="outline"
-                  className="flex-1 h-12 rounded-xl font-medium text-base border-2 border-muted text-[#ed565a] hover:bg-transparent hover:border-[#F0E3C3] hover:text-[#F0E3C3]"
+                  className="flex-1 h-12 rounded-xl font-medium text-base border-2 border-[#ed565a] text-[#ed565a] hover:bg-transparent hover:border-[#F0E3C3] hover:text-[#F0E3C3]"
                 >
                   {hasPhoto ? "Retake Photo" : "Take a Photo"}
                 </Button>
