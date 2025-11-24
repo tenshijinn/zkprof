@@ -335,7 +335,7 @@ const Index = () => {
           {state === "success" && (
             <div className="w-full space-y-4">
               <Button
-                className="w-full h-12 rounded-2xl btn-primary font-styrene font-black text-base"
+                className="w-full h-12 rounded-2xl btn-primary font-styrene font-black text-base text-[#181818]"
                 onClick={() => window.open("https://arubaito.app", "_blank")}
               >
                 Use on Arubaito Profile
