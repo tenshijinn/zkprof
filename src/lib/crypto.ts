@@ -1,6 +1,14 @@
-// Base64 encoding utility
+// Base64 encoding utility with chunking to prevent stack overflow
 const encodeBase64 = (arr: Uint8Array): string => {
-  return btoa(String.fromCharCode.apply(null, Array.from(arr)));
+  const CHUNK_SIZE = 8192; // Process 8KB at a time to avoid call stack limit
+  let binary = '';
+  
+  for (let i = 0; i < arr.length; i += CHUNK_SIZE) {
+    const chunk = arr.subarray(i, i + CHUNK_SIZE);
+    binary += String.fromCharCode.apply(null, Array.from(chunk));
+  }
+  
+  return btoa(binary);
 };
 
 export interface EncryptionResult {
