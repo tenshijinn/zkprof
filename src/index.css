@@ -103,4 +103,9 @@ All colors MUST be HSL.
       background-image: var(--bg-image), radial-gradient(#ed565a, #000000), repeating-linear-gradient(transparent 0, rgba(0, 0, 0, 0.1) 2.5px, transparent 5px);
     }
   }
+
+  .night-vision-effect-static {
+    background: radial-gradient(#ed565a, #000000), repeating-linear-gradient(transparent 0, rgba(0, 0, 0, 0.1) 2px, transparent 4px);
+    background-blend-mode: overlay;
+  }
 }

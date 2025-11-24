@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { Github, Wallet } from "lucide-react";
+import { Github, Wallet, Trash2 } from "lucide-react";
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { Connection, PublicKey, Transaction, SystemProgram, LAMPORTS_PER_SOL } from '@solana/web3.js';
@@ -12,6 +12,7 @@ import faceGuide from "@/assets/pfp-guide.png";
 import zcashLogo from "@/assets/zcash-logo.png";
 import solanaLogo from "@/assets/solana-logo.png";
 import zkProfLogo from "@/assets/zkprof-logo.png";
+import { Card } from "@/components/ui/card";
 type AppState = "idle" | "photo-taken" | "encrypting" | "minting" | "success";
 const RECIPIENT_ADDRESS = "8DuKPJAqMEa84VTcDfqF967CUG98Tf6DdtfyJFviSKL6";
 const PAYMENT_AMOUNT_USD = 0.01; // $0.01 for testing, will change to 5.00 for production
@@ -38,6 +39,9 @@ const Index = () => {
   const [fps, setFps] = useState(0);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [mintAddress, setMintAddress] = useState("");
+  const [walletBalance, setWalletBalance] = useState<number | null>(null);
+  const [solPrice, setSolPrice] = useState<number | null>(null);
+  const [mintedNFTs, setMintedNFTs] = useState<any[]>([]);
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const pixelationCanvasRef = useRef<HTMLCanvasElement>(null);
@@ -132,6 +136,54 @@ const Index = () => {
     }, 1000);
     return () => clearInterval(interval);
   }, []);
+
+  // Fetch wallet balance and SOL price
+  useEffect(() => {
+    const fetchBalanceAndPrice = async () => {
+      if (!publicKey || !connection) return;
+      
+      try {
+        const [balance, price] = await Promise.all([
+          connection.getBalance(publicKey),
+          fetchSolPrice()
+        ]);
+        setWalletBalance(balance / LAMPORTS_PER_SOL);
+        setSolPrice(price);
+      } catch (error) {
+        console.error('Failed to fetch balance/price:', error);
+      }
+    };
+
+    if (connected) {
+      fetchBalanceAndPrice();
+      const interval = setInterval(fetchBalanceAndPrice, 30000); // Refresh every 30s
+      return () => clearInterval(interval);
+    }
+  }, [publicKey, connection, connected]);
+
+  // Fetch minted NFTs
+  useEffect(() => {
+    const fetchMintedNFTs = async () => {
+      if (!publicKey) return;
+
+      try {
+        const { data, error } = await supabase
+          .from('nft_mints')
+          .select('*')
+          .eq('user_public_key', publicKey.toBase58())
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+        setMintedNFTs(data || []);
+      } catch (error) {
+        console.error('Failed to fetch minted NFTs:', error);
+      }
+    };
+
+    if (connected) {
+      fetchMintedNFTs();
+    }
+  }, [publicKey, connected, state]); // Refetch when state changes (e.g., after minting)
   const takePhoto = () => {
     if (videoRef.current && canvasRef.current) {
       const canvas = canvasRef.current;
@@ -308,6 +360,36 @@ const Index = () => {
       setProgress(0);
     }
   };
+
+  const burnNFT = async (nftId: string, mintAddr: string) => {
+    if (!publicKey) {
+      toast.error("Please connect your wallet");
+      return;
+    }
+
+    try {
+      toast.loading("Burning zkPFP...");
+      
+      // Delete from database
+      const { error } = await supabase
+        .from('nft_mints')
+        .delete()
+        .eq('id', nftId);
+
+      if (error) throw error;
+
+      // Update local state
+      setMintedNFTs(prev => prev.filter(nft => nft.id !== nftId));
+      
+      toast.dismiss();
+      toast.success("zkPFP burned successfully");
+    } catch (error) {
+      console.error('Burn error:', error);
+      toast.dismiss();
+      toast.error("Failed to burn zkPFP");
+    }
+  };
+
   const getStatusText = () => {
     switch (state) {
       case "encrypting":
@@ -322,12 +404,27 @@ const Index = () => {
   };
   return <div className="min-h-screen flex flex-col">
       {/* Header */}
-      <div className="w-full flex justify-start px-8 py-6">
+      <div className="w-full flex justify-between items-center px-8 py-6">
         <img src={zkProfLogo} alt="zkProf" className="h-8" />
+        
+        {/* Wallet Balance Display */}
+        {connected && walletBalance !== null && solPrice !== null && (
+          <div className="flex items-center gap-2 px-4 py-2 bg-muted/20 border border-border rounded-xl">
+            <Wallet size={16} className="text-secondary" />
+            <div className="flex flex-col">
+              <span className="text-xs font-mono text-secondary">
+                {walletBalance.toFixed(4)} SOL
+              </span>
+              <span className="text-[10px] font-mono text-muted-foreground">
+                ${(walletBalance * solPrice).toFixed(2)} USD
+              </span>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col items-center justify-center px-4">
+      <div className="flex-1 flex flex-col items-center justify-center px-4 gap-12">
         <div className="w-full max-w-[300px] flex flex-col items-center space-y-8">
 
         {/* Main Content */}
@@ -445,6 +542,44 @@ const Index = () => {
           </div>
         </div>
         </div>
+
+        {/* Minted zkPFPs Section */}
+        {connected && mintedNFTs.length > 0 && (
+          <div className="w-full max-w-4xl">
+            <h3 className="text-xl font-styrene font-black text-secondary mb-4 text-center">
+              Your zkPFPs ({mintedNFTs.length})
+            </h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {mintedNFTs.map((nft) => (
+                <Card key={nft.id} className="bg-muted/20 border-border p-4 space-y-3">
+                  <div className="aspect-square bg-muted/40 rounded-lg flex items-center justify-center border border-border night-vision-effect-static">
+                    <div className="text-center">
+                      <div className="text-2xl mb-1">🔒</div>
+                      <div className="text-xs font-mono text-secondary">Encrypted</div>
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <div className="text-xs font-mono text-muted-foreground truncate">
+                      {nft.mint_address}
+                    </div>
+                    <div className="text-[10px] font-mono text-muted-foreground">
+                      {new Date(nft.created_at).toLocaleDateString()}
+                    </div>
+                    <Button
+                      onClick={() => burnNFT(nft.id, nft.mint_address)}
+                      variant="outline"
+                      size="sm"
+                      className="w-full h-8 border-[#ed565a] text-[#ed565a] hover:bg-[#ed565a] hover:text-white"
+                    >
+                      <Trash2 size={12} className="mr-1" />
+                      Burn
+                    </Button>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Footer */}
