@@ -266,7 +266,7 @@ const Index = () => {
               <Button className="w-full h-12 rounded-2xl btn-primary font-styrene font-black text-base text-[#181818]" onClick={() => window.open("https://arubaito.app", "_blank")}>
                 Use on Arubaito Profile
               </Button>
-              <Button variant="ghost" onClick={() => window.location.reload()} className="w-full h-12 rounded-2xl font-styrene font-black text-base text-foreground">
+              <Button variant="ghost" onClick={() => window.location.reload()} className="w-full h-12 rounded-2xl font-styrene font-black text-base text-foreground hover:bg-[#e4dac2] hover:text-[#181818]">
                 Restart
               </Button>
             </div>}
