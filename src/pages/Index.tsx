@@ -203,12 +203,15 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-4 py-8">
-      <div className="w-full max-w-[300px] flex flex-col items-center space-y-8">
-        {/* Logo */}
-        <div className="self-start">
-          <img src={zkProfLogo} alt="zkProf" className="h-8" />
-        </div>
+    <div className="min-h-screen flex flex-col">
+      {/* Header */}
+      <div className="w-full flex justify-end px-8 py-6">
+        <img src={zkProfLogo} alt="zkProf" className="h-8" />
+      </div>
+
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col items-center justify-center px-4">
+        <div className="w-full max-w-[300px] flex flex-col items-center space-y-8">
 
         {/* Main Content */}
         <div className="w-full flex flex-col items-center space-y-6">
@@ -332,14 +335,14 @@ const Index = () => {
           {state === "success" && (
             <div className="w-full space-y-4">
               <Button
-                className="w-full h-12 rounded-2xl btn-primary font-medium text-base"
+                className="w-full h-12 rounded-2xl btn-primary font-styrene font-black text-base"
                 onClick={() => window.open("https://arubaito.app", "_blank")}
               >
                 Use on Arubaito Profile
               </Button>
               <Button
                 variant="ghost"
-                className="w-full h-12 rounded-2xl font-medium text-base text-muted-foreground hover:text-foreground"
+                className="w-full h-12 rounded-2xl font-styrene font-black text-base text-muted-foreground hover:text-foreground"
                 onClick={() => window.location.reload()}
               >
                 Done
@@ -359,7 +362,7 @@ const Index = () => {
         </div>
 
         {/* Footer */}
-        <div className="relative text-center space-y-4">
+        <div className="text-center space-y-4">
           <p className="text-xs text-muted-foreground opacity-70">
             Your photo never leaves your device. Only the encrypted commitment is used.
           </p>
@@ -373,18 +376,21 @@ const Index = () => {
               <img src={solanaLogo} alt="Solana" className="h-8" />
             </div>
           </div>
-
-          {/* GitHub Link - Bottom Right */}
-          <a
-            href="https://github.com/tenshijinn/arubaito"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="absolute bottom-0 right-0 inline-flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors"
-          >
-            <Github size={16} />
-            <span>View on GitHub</span>
-          </a>
         </div>
+        </div>
+      </div>
+
+      {/* Footer */}
+      <div className="w-full flex justify-start px-8 py-6">
+        <a
+          href="https://github.com/tenshijinn/arubaito"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors"
+        >
+          <Github size={16} />
+          <span>View on GitHub</span>
+        </a>
       </div>
     </div>
   );
