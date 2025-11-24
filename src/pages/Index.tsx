@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { Github, Wallet, Trash2 } from "lucide-react";
+import { Github, Wallet, Trash2, ExternalLink } from "lucide-react";
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { Connection, PublicKey, Transaction, SystemProgram, LAMPORTS_PER_SOL } from '@solana/web3.js';
@@ -547,7 +547,7 @@ const Index = () => {
         {connected && mintedNFTs.length > 0 && (
           <div className="w-full max-w-4xl">
             <h3 className="text-xl font-styrene font-black text-secondary mb-4 text-center">
-              Your zkPFPs ({mintedNFTs.length})
+              Transaction History ({mintedNFTs.length})
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {mintedNFTs.map((nft) => (
@@ -559,12 +559,38 @@ const Index = () => {
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <div className="text-xs font-mono text-muted-foreground truncate">
-                      {nft.mint_address}
+                    <div className="text-[10px] font-mono text-muted-foreground space-y-1">
+                      <div className="flex items-start justify-between gap-1">
+                        <span className="text-secondary/70">Minted:</span>
+                        <span className="text-right">
+                          {new Date(nft.created_at).toLocaleString("en-US", {
+                            month: "2-digit",
+                            day: "2-digit",
+                            year: "2-digit",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            hour12: false
+                          })}
+                        </span>
+                      </div>
                     </div>
-                    <div className="text-[10px] font-mono text-muted-foreground">
-                      {new Date(nft.created_at).toLocaleDateString()}
-                    </div>
+                    
+                    <a
+                      href={`https://solscan.io/tx/${nft.payment_signature}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block w-full"
+                    >
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="w-full h-8 border-secondary/50 text-secondary hover:bg-secondary/10 hover:border-secondary"
+                      >
+                        <ExternalLink size={12} className="mr-1" />
+                        View Transaction
+                      </Button>
+                    </a>
+                    
                     <Button
                       onClick={() => burnNFT(nft.id, nft.mint_address)}
                       variant="outline"
