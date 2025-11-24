@@ -26,19 +26,33 @@ export async function encryptImage(
   const arrayBuffer = await blob.arrayBuffer();
   const imageData = new Uint8Array(arrayBuffer);
 
-  // Generate a random symmetric key for AES-256-GCM simulation
-  const symmetricKey = nacl.randomBytes(32);
+  // Generate a random symmetric key for AES-256-GCM
+  const symmetricKey = crypto.getRandomValues(new Uint8Array(32));
   
-  // Generate IV
-  const iv = nacl.randomBytes(12);
+  // Generate IV for AES-GCM (96 bits / 12 bytes)
+  const iv = crypto.getRandomValues(new Uint8Array(12));
 
-  // Encrypt the image data (using XOR for simplicity in this demo)
-  const encryptedData = new Uint8Array(imageData.length);
-  for (let i = 0; i < imageData.length; i++) {
-    encryptedData[i] = imageData[i] ^ symmetricKey[i % symmetricKey.length];
-  }
+  // Import the symmetric key for Web Crypto API
+  const cryptoKey = await crypto.subtle.importKey(
+    'raw',
+    symmetricKey,
+    { name: 'AES-GCM' },
+    false,
+    ['encrypt']
+  );
 
-  // Encrypt the symmetric key with recipient's public key
+  // Encrypt the image data using AES-256-GCM
+  const encryptedDataBuffer = await crypto.subtle.encrypt(
+    {
+      name: 'AES-GCM',
+      iv: iv
+    },
+    cryptoKey,
+    imageData
+  );
+  const encryptedData = new Uint8Array(encryptedDataBuffer);
+
+  // Encrypt the symmetric key with recipient's public key using NaCl box
   const recipientPubKeyBytes = decodeBase64(recipientPublicKey);
   const ephemeralKeyPair = nacl.box.keyPair();
   const nonce = nacl.randomBytes(24);
@@ -50,9 +64,10 @@ export async function encryptImage(
     ephemeralKeyPair.secretKey
   );
 
-  // Create commitment hash (SHA-256 simulation)
+  // Create commitment hash using SHA-256
   const commitmentInput = new Uint8Array([...symmetricKey, ...iv]);
-  const commitment = encodeBase64(nacl.hash(commitmentInput).slice(0, 32));
+  const commitmentHash = await crypto.subtle.digest('SHA-256', commitmentInput);
+  const commitment = encodeBase64(new Uint8Array(commitmentHash));
 
   return {
     encryptedData: encodeBase64(encryptedData),
