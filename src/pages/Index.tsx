@@ -14,7 +14,18 @@ import solanaLogo from "@/assets/solana-logo.png";
 import zkProfLogo from "@/assets/zkprof-logo.png";
 type AppState = "idle" | "photo-taken" | "encrypting" | "minting" | "success";
 const RECIPIENT_ADDRESS = "8DuKPJAqMEa84VTcDfqF967CUG98Tf6DdtfyJFviSKL6";
-const PAYMENT_AMOUNT = 5;
+const PAYMENT_AMOUNT_USD = 0.01; // $0.01 for testing, will change to 5.00 for production
+
+const fetchSolPrice = async (): Promise<number> => {
+  try {
+    const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd');
+    const data = await response.json();
+    return data.solana.usd;
+  } catch (error) {
+    console.error('Failed to fetch SOL price:', error);
+    throw new Error('Unable to fetch SOL price. Please try again.');
+  }
+};
 
 const Index = () => {
   const { connection } = useConnection();
@@ -216,13 +227,32 @@ const Index = () => {
 
       // 6. Process payment
       setState("minting");
+      
+      // Fetch current SOL price and calculate SOL amount
+      const solPrice = await fetchSolPrice();
+      const solAmount = PAYMENT_AMOUNT_USD / solPrice;
+      console.log(`Payment: $${PAYMENT_AMOUNT_USD} = ${solAmount.toFixed(6)} SOL at $${solPrice.toFixed(2)}/SOL`);
+      
+      // Check wallet balance
+      const balance = await connection.getBalance(publicKey);
+      const requiredLamports = Math.floor(solAmount * LAMPORTS_PER_SOL) + 10000; // Add 0.00001 SOL for fees
+      
+      if (balance < requiredLamports) {
+        const neededSol = requiredLamports / LAMPORTS_PER_SOL;
+        const haveSol = balance / LAMPORTS_PER_SOL;
+        const neededUsd = neededSol * solPrice;
+        const haveUsd = haveSol * solPrice;
+        toast.error(`Insufficient balance: Need ${neededSol.toFixed(6)} SOL ($${neededUsd.toFixed(2)}), but wallet has ${haveSol.toFixed(6)} SOL ($${haveUsd.toFixed(2)})`);
+        throw new Error('INSUFFICIENT_BALANCE');
+      }
+      
       const recipientPubkey = new PublicKey(RECIPIENT_ADDRESS);
       
       const transaction = new Transaction().add(
         SystemProgram.transfer({
           fromPubkey: publicKey,
           toPubkey: recipientPubkey,
-          lamports: PAYMENT_AMOUNT * LAMPORTS_PER_SOL
+          lamports: Math.floor(solAmount * LAMPORTS_PER_SOL)
         })
       );
 
@@ -233,6 +263,8 @@ const Index = () => {
       const signed = await signTransaction(transaction);
       const signature = await connection.sendRawTransaction(signed.serialize());
       await connection.confirmTransaction(signature);
+      
+      toast.success(`Payment successful: ${solAmount.toFixed(6)} SOL ($${PAYMENT_AMOUNT_USD})`);
       setProgress(80);
 
       // 7. Store NFT mint record
@@ -256,7 +288,22 @@ const Index = () => {
 
     } catch (error) {
       console.error("Encryption/minting error:", error);
-      toast.error("Failed to encrypt and mint. Please try again.");
+      
+      // Parse specific error types
+      const errorMessage = error.message || error.toString();
+      
+      if (errorMessage.includes('INSUFFICIENT_BALANCE')) {
+        // Already showed detailed toast in balance check
+      } else if (errorMessage.includes('User rejected') || errorMessage.includes('user rejected')) {
+        toast.error('Transaction cancelled by user.');
+      } else if (errorMessage.includes('Attempt to debit')) {
+        toast.error('Wallet has insufficient funds. Please add SOL to your wallet.');
+      } else if (errorMessage.includes('Failed to fetch') || errorMessage.includes('fetch SOL price')) {
+        toast.error('Network error. Please check your connection and try again.');
+      } else {
+        toast.error(`Transaction failed: ${errorMessage.slice(0, 100)}`);
+      }
+      
       setState("photo-taken");
       setProgress(0);
     }
