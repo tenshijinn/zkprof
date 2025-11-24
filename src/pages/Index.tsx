@@ -1,7 +1,10 @@
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import { Github } from "lucide-react";
 import faceGuide from "@/assets/pfp-guide.png";
+import zcashLogo from "@/assets/zcash-logo.png";
+import solanaLogo from "@/assets/solana-logo.png";
 
 type AppState = "idle" | "photo-taken" | "encrypting" | "minting" | "success";
 
@@ -200,7 +203,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-4 py-8">
-      <div className="w-full max-w-[500px] flex flex-col items-center space-y-8">
+      <div className="w-full max-w-[300px] flex flex-col items-center space-y-8">
         {/* Logo */}
         <div className="self-start">
           <h1 className="text-2xl font-medium tracking-tight">zkProf</h1>
@@ -335,7 +338,10 @@ const Index = () => {
           {/* Success Actions */}
           {state === "success" && (
             <div className="w-full space-y-4">
-              <Button className="w-full h-12 rounded-2xl btn-primary font-medium text-base">
+              <Button 
+                className="w-full h-12 rounded-2xl btn-primary font-medium text-base"
+                onClick={() => window.open('https://arubaito.app', '_blank')}
+              >
                 Use on Arubaito Profile
               </Button>
               <Button
@@ -365,11 +371,32 @@ const Index = () => {
         </div>
 
         {/* Footer */}
-        <div className="text-center">
+        <div className="text-center space-y-4">
           <p className="text-xs text-muted-foreground opacity-70">
             Your photo never leaves your device. Only the encrypted commitment
             is used.
           </p>
+          
+          {/* Security Info */}
+          <div className="flex flex-col items-center gap-2 pt-4">
+            <p className="text-xs text-muted-foreground">ZK-Snark Secured with</p>
+            <div className="flex items-center gap-4">
+              <img src={zcashLogo} alt="ZCash" className="h-8" />
+              <span className="text-xs text-muted-foreground">minted on</span>
+              <img src={solanaLogo} alt="Solana" className="h-8" />
+            </div>
+          </div>
+          
+          {/* GitHub Link */}
+          <a 
+            href="https://github.com/tenshijinn/arubaito" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors pt-2"
+          >
+            <Github size={16} />
+            <span>View on GitHub</span>
+          </a>
         </div>
       </div>
     </div>
