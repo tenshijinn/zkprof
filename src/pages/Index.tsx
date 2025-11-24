@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Github, Wallet } from "lucide-react";
-import { useWallet } from '@solana/wallet-adapter-react';
+import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { Connection, PublicKey, Transaction, SystemProgram, LAMPORTS_PER_SOL } from '@solana/web3.js';
 import { encryptImage } from "@/lib/crypto";
@@ -17,6 +17,7 @@ const RECIPIENT_ADDRESS = "8DuKPJAqMEa84VTcDfqF967CUG98Tf6DdtfyJFviSKL6";
 const PAYMENT_AMOUNT = 5;
 
 const Index = () => {
+  const { connection } = useConnection();
   const { publicKey, signTransaction, connected } = useWallet();
   const [state, setState] = useState<AppState>("idle");
   const [progress, setProgress] = useState(0);
@@ -215,7 +216,6 @@ const Index = () => {
 
       // 6. Process payment
       setState("minting");
-      const connection = new Connection('https://api.mainnet-beta.solana.com');
       const recipientPubkey = new PublicKey(RECIPIENT_ADDRESS);
       
       const transaction = new Transaction().add(
