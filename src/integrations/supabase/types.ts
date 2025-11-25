@@ -24,6 +24,8 @@ export type Database = {
           id: string
           iv: string
           user_public_key: string
+          zk_proof: string | null
+          zk_public_signals: string[] | null
         }
         Insert: {
           blob_id: string
@@ -34,6 +36,8 @@ export type Database = {
           id?: string
           iv: string
           user_public_key: string
+          zk_proof?: string | null
+          zk_public_signals?: string[] | null
         }
         Update: {
           blob_id?: string
@@ -44,6 +48,8 @@ export type Database = {
           id?: string
           iv?: string
           user_public_key?: string
+          zk_proof?: string | null
+          zk_public_signals?: string[] | null
         }
         Relationships: []
       }
@@ -56,6 +62,8 @@ export type Database = {
           mint_address: string
           payment_signature: string
           user_public_key: string
+          zk_proof: string | null
+          zk_public_signals: string[] | null
         }
         Insert: {
           blob_id?: string | null
@@ -65,6 +73,8 @@ export type Database = {
           mint_address: string
           payment_signature: string
           user_public_key: string
+          zk_proof?: string | null
+          zk_public_signals?: string[] | null
         }
         Update: {
           blob_id?: string | null
@@ -74,6 +84,8 @@ export type Database = {
           mint_address?: string
           payment_signature?: string
           user_public_key?: string
+          zk_proof?: string | null
+          zk_public_signals?: string[] | null
         }
         Relationships: [
           {
