@@ -4,7 +4,8 @@ import { Progress } from "@/components/ui/progress";
 import { Github, Wallet, Trash2, ExternalLink } from "lucide-react";
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
-import { Connection, PublicKey, Transaction, SystemProgram, LAMPORTS_PER_SOL } from '@solana/web3.js';
+import { Connection, PublicKey, Transaction, SystemProgram, LAMPORTS_PER_SOL, sendAndConfirmTransaction } from '@solana/web3.js';
+import { createBurnInstruction, TOKEN_PROGRAM_ID } from '@solana/spl-token';
 import { encryptImage } from "@/lib/crypto";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -371,15 +372,49 @@ const Index = () => {
   };
 
   const burnNFT = async (nftId: string, mintAddr: string) => {
-    if (!publicKey) {
+    if (!publicKey || !signTransaction) {
       toast.error("Please connect your wallet");
       return;
     }
 
     try {
-      toast.loading("Burning zkPFP...");
+      toast.loading("Burning NFT on Solana...");
       
-      // Delete from database
+      // Step 1: Burn the NFT on-chain
+      const mintPubkey = new PublicKey(mintAddr);
+      
+      // Get the associated token account for this NFT
+      const { getAssociatedTokenAddress } = await import('@solana/spl-token');
+      const tokenAccount = await getAssociatedTokenAddress(
+        mintPubkey,
+        publicKey
+      );
+      
+      // Create burn instruction (burns 1 token, which is the NFT)
+      const burnIx = createBurnInstruction(
+        tokenAccount,
+        mintPubkey,
+        publicKey,
+        1, // Amount to burn (1 for NFT)
+        [],
+        TOKEN_PROGRAM_ID
+      );
+      
+      // Create and send transaction
+      const transaction = new Transaction().add(burnIx);
+      transaction.feePayer = publicKey;
+      transaction.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
+      
+      const signedTx = await signTransaction(transaction);
+      const signature = await connection.sendRawTransaction(signedTx.serialize());
+      
+      toast.loading("Confirming burn transaction...");
+      await connection.confirmTransaction(signature, 'confirmed');
+      
+      console.log('NFT burned on-chain. Signature:', signature);
+      
+      // Step 2: Delete from database after successful on-chain burn
+      toast.loading("Updating database...");
       const { error } = await supabase
         .from('nft_mints')
         .delete()
@@ -387,15 +422,21 @@ const Index = () => {
 
       if (error) throw error;
 
-      // Update local state
+      // Step 3: Update local state
       setMintedNFTs(prev => prev.filter(nft => nft.id !== nftId));
       
       toast.dismiss();
-      toast.success("zkPFP burned successfully");
+      toast.success("zkPFP burned successfully on-chain!");
     } catch (error) {
       console.error('Burn error:', error);
       toast.dismiss();
-      toast.error("Failed to burn zkPFP");
+      
+      const errorMessage = error.message || error.toString();
+      if (errorMessage.includes('User rejected') || errorMessage.includes('user rejected')) {
+        toast.error('Burn cancelled by user.');
+      } else {
+        toast.error(`Failed to burn zkPFP: ${errorMessage.slice(0, 100)}`);
+      }
     }
   };
 
