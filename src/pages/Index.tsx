@@ -6,6 +6,7 @@ import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { Connection, PublicKey, Transaction, SystemProgram, LAMPORTS_PER_SOL, sendAndConfirmTransaction } from '@solana/web3.js';
 import { createBurnInstruction, TOKEN_PROGRAM_ID } from '@solana/spl-token';
+import { Metaplex, walletAdapterIdentity } from "@metaplex-foundation/js";
 import { encryptImage } from "@/lib/crypto";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -329,8 +330,50 @@ const Index = () => {
       toast.success(`Payment successful: ${solAmount.toFixed(6)} SOL ($${PAYMENT_AMOUNT_USD})`);
       setProgress(80);
 
-      // 7. Store NFT mint record
-      const mintAddr = `mock-nft-${blobId}`;
+      // 7. Mint real NFT using Metaplex
+      toast.loading("Minting NFT on Solana...");
+      
+      const metaplex = Metaplex.make(connection)
+        .use(walletAdapterIdentity({ publicKey, signTransaction, signAllTransactions: async (txs) => txs }));
+
+      // Create metadata JSON
+      const metadata = {
+        name: "zkPFP",
+        symbol: "ZKPFP",
+        description: "Zero-Knowledge Private Profile Picture - Encrypted photo stored on-chain",
+        image: publicUrl, // Points to encrypted data
+        attributes: [
+          { trait_type: "Commitment", value: encryption.commitment },
+          { trait_type: "Created", value: new Date().toISOString() }
+        ],
+        properties: {
+          files: [{ uri: publicUrl, type: "application/octet-stream" }],
+          category: "image",
+          encryption: {
+            algorithm: "AES-256-GCM",
+            commitment: encryption.commitment
+          }
+        }
+      };
+
+      // Upload metadata to Arweave
+      const { uri: metadataUri } = await metaplex.nfts().uploadMetadata(metadata);
+      console.log("Metadata uploaded to:", metadataUri);
+      setProgress(85);
+
+      // Create the NFT
+      const { nft } = await metaplex.nfts().create({
+        uri: metadataUri,
+        name: "zkPFP",
+        symbol: "ZKPFP",
+        sellerFeeBasisPoints: 0,
+      }, { commitment: "finalized" });
+
+      const mintAddr = nft.address.toString();
+      console.log("NFT minted at:", mintAddr);
+      setProgress(90);
+
+      // 8. Store NFT mint record
       const { error: mintError } = await supabase
         .from('nft_mints')
         .insert({
@@ -338,7 +381,7 @@ const Index = () => {
           payment_signature: signature,
           blob_id: blobId,
           mint_address: mintAddr,
-          metadata_uri: `https://arweave.net/${encryption.commitment}`
+          metadata_uri: metadataUri
         });
 
       if (mintError) throw mintError;
@@ -346,7 +389,8 @@ const Index = () => {
       setMintAddress(mintAddr);
       setProgress(100);
       setState("success");
-      toast.success("zkPFP successfully minted!");
+      toast.dismiss();
+      toast.success("zkPFP successfully minted on-chain!");
 
     } catch (error) {
       console.error("Encryption/minting error:", error);
@@ -378,6 +422,28 @@ const Index = () => {
     }
 
     try {
+      // Check if this is a mock NFT (from before real minting was implemented)
+      const isMockNFT = mintAddr.startsWith('mock-nft-');
+      
+      if (isMockNFT) {
+        // For mock NFTs, just delete from database
+        toast.loading("Removing zkPFP record...");
+        
+        const { error } = await supabase
+          .from('nft_mints')
+          .delete()
+          .eq('id', nftId);
+
+        if (error) throw error;
+
+        setMintedNFTs(prev => prev.filter(nft => nft.id !== nftId));
+        
+        toast.dismiss();
+        toast.success("zkPFP record removed (this was a test entry)");
+        return;
+      }
+      
+      // For real NFTs, burn on-chain
       toast.loading("Burning NFT on Solana...");
       
       // Step 1: Burn the NFT on-chain
