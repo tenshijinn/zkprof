@@ -7,8 +7,10 @@ import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { Connection, PublicKey, Transaction, SystemProgram, LAMPORTS_PER_SOL, sendAndConfirmTransaction } from '@solana/web3.js';
 import { createBurnInstruction, TOKEN_PROGRAM_ID } from '@solana/spl-token';
 import { encryptImage } from "@/lib/crypto";
+import { serializeProof } from "@/lib/zkproof";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { ZKProofVerifier } from "@/components/ZKProofVerifier";
 import faceGuide from "@/assets/pfp-guide.png";
 import zcashLogo from "@/assets/zcash-logo.png";
 import solanaLogo from "@/assets/solana-logo.png";
@@ -281,7 +283,9 @@ const Index = () => {
           user_public_key: publicKeyBase64,
           commitment: encryption.commitment,
           encrypted_image_url: publicUrl,
-          iv: encryption.iv
+          iv: encryption.iv,
+          zk_proof: encryption.zkProof ? serializeProof(encryption.zkProof.proof) : null,
+          zk_public_signals: encryption.zkProof ? encryption.zkProof.proof.publicSignals : null
         });
 
       if (dbError) throw dbError;
@@ -341,7 +345,9 @@ const Index = () => {
           payment_signature: signature,
           blob_id: blobId,
           mint_address: mintAddr,
-          metadata_uri: metadataUri
+          metadata_uri: metadataUri,
+          zk_proof: encryption.zkProof ? serializeProof(encryption.zkProof.proof) : null,
+          zk_public_signals: encryption.zkProof ? encryption.zkProof.proof.publicSignals : null
         });
 
       if (mintError) throw mintError;
