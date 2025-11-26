@@ -64,7 +64,7 @@ export function Header({ currentPage = "take-photo", walletBalance, solPrice }: 
         
         {/* Desktop Wallet Balance */}
         <div className="hidden md:block">
-          {connected && walletBalance !== null && solPrice !== null ? (
+          {connected && typeof walletBalance === 'number' && typeof solPrice === 'number' ? (
             <div className="flex items-center gap-2 px-4 py-2 bg-muted/20 border border-border rounded-xl">
               <Wallet size={16} className="text-secondary" />
               <div className="flex flex-col">
@@ -116,7 +116,7 @@ export function Header({ currentPage = "take-photo", walletBalance, solPrice }: 
             
             {/* Mobile Wallet */}
             <div className="pt-2">
-              {connected && walletBalance !== null && solPrice !== null ? (
+              {connected && typeof walletBalance === 'number' && typeof solPrice === 'number' ? (
                 <div className="flex items-center gap-2 px-4 py-2 bg-muted/20 border border-border rounded-xl w-fit">
                   <Wallet size={16} className="text-secondary" />
                   <div className="flex flex-col">
