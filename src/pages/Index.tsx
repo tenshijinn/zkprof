@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { Wallet, Trash2, ExternalLink, ChevronDown } from "lucide-react";
+import { Github, Wallet, Trash2, ExternalLink } from "lucide-react";
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { Connection, PublicKey, Transaction, SystemProgram, LAMPORTS_PER_SOL, sendAndConfirmTransaction } from '@solana/web3.js';
@@ -16,10 +16,6 @@ import zcashLogo from "@/assets/zcash-logo.png";
 import solanaLogo from "@/assets/solana-logo.png";
 import zkProfLogo from "@/assets/zkprof-logo.png";
 import { Card } from "@/components/ui/card";
-import Navigation from "@/components/Navigation";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 type AppState = "idle" | "photo-taken" | "encrypting" | "minting" | "success";
 const RECIPIENT_ADDRESS = "8DuKPJAqMEa84VTcDfqF967CUG98Tf6DdtfyJFviSKL6";
 const PAYMENT_AMOUNT_USD = 0.01; // $0.01 for testing, will change to 5.00 for production
@@ -58,8 +54,6 @@ const Index = () => {
   const [walletBalance, setWalletBalance] = useState<number | null>(null);
   const [solPrice, setSolPrice] = useState<number | null>(null);
   const [mintedNFTs, setMintedNFTs] = useState<any[]>([]);
-  const [userName, setUserName] = useState("");
-  const [isNameOpen, setIsNameOpen] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const pixelationCanvasRef = useRef<HTMLCanvasElement>(null);
@@ -225,20 +219,6 @@ const Index = () => {
           hour12: false
         });
         context.fillText(timeString, 290, 370);
-        
-        // Add name overlay if provided
-        if (userName.trim()) {
-          context.font = "bold 24px Consolas";
-          context.fillStyle = "#F0E3C3";
-          context.strokeStyle = "#181818";
-          context.lineWidth = 3;
-          context.textAlign = "right";
-          const textX = 290;
-          const textY = 40;
-          context.strokeText(userName.trim(), textX, textY);
-          context.fillText(userName.trim(), textX, textY);
-        }
-        
         const dataUrl = canvas.toDataURL();
         setPhotoDataUrl(dataUrl);
         setHasPhoto(true);
@@ -508,11 +488,25 @@ const Index = () => {
     }
   };
   return <div className="min-h-screen flex flex-col">
-      <Navigation 
-        walletBalance={walletBalance} 
-        solPrice={solPrice} 
-        connected={connected}
-      />
+      {/* Header */}
+      <div className="w-full flex justify-between items-center px-8 py-6">
+        <img src={zkProfLogo} alt="zkProf" className="h-8" />
+        
+        {/* Wallet Balance Display */}
+        {connected && walletBalance !== null && solPrice !== null && (
+          <div className="flex items-center gap-2 px-4 py-2 bg-muted/20 border border-border rounded-xl">
+            <Wallet size={16} className="text-secondary" />
+            <div className="flex flex-col">
+              <span className="text-xs font-mono text-secondary">
+                {walletBalance.toFixed(4)} SOL
+              </span>
+              <span className="text-[10px] font-mono text-muted-foreground">
+                ${(walletBalance * solPrice).toFixed(2)} USD
+              </span>
+            </div>
+          </div>
+        )}
+      </div>
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col items-center justify-center px-4 gap-12">
@@ -569,34 +563,6 @@ const Index = () => {
                 </div>
               </div>}
           </div>
-
-          {/* Optional Name Field */}
-          {hasPhoto && state !== "success" && (
-            <div className="mb-4 w-full max-w-xs mx-auto">
-              <Collapsible open={isNameOpen} onOpenChange={setIsNameOpen}>
-                <CollapsibleTrigger className="flex items-center gap-2 text-sm text-foreground/60 hover:text-foreground transition-colors font-mono mx-auto">
-                  <ChevronDown className={`w-4 h-4 transition-transform ${isNameOpen ? 'rotate-180' : ''}`} />
-                  Add Your Name (Optional)
-                </CollapsibleTrigger>
-                <CollapsibleContent className="mt-3">
-                  <div className="space-y-2">
-                    <Label htmlFor="userName" className="text-xs font-mono text-foreground/70">
-                      Will appear on top right of photo
-                    </Label>
-                    <Input
-                      id="userName"
-                      type="text"
-                      placeholder="Enter your name"
-                      value={userName}
-                      onChange={(e) => setUserName(e.target.value)}
-                      className="font-mono text-sm"
-                      maxLength={30}
-                    />
-                  </div>
-                </CollapsibleContent>
-              </Collapsible>
-            </div>
-          )}
 
           {/* Wallet Connect */}
           {!connected && (
@@ -664,7 +630,7 @@ const Index = () => {
 
         {/* Minted zkPFPs Section */}
         {connected && mintedNFTs.length > 0 && (
-          <div id="zkpfps-section" className="w-full max-w-4xl">
+          <div className="w-full max-w-4xl">
             <h3 className="text-xl font-styrene font-black text-secondary mb-4 text-center">
               Transaction History ({mintedNFTs.length})
             </h3>
@@ -727,7 +693,13 @@ const Index = () => {
         )}
       </div>
 
-      {/* Footer - removed, now in navigation */}
+      {/* Footer */}
+      <div className="w-full flex justify-end px-8 py-6">
+        <a href="https://github.com/tenshijinn/arubaito" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors">
+          <Github size={16} />
+          <span>View on GitHub</span>
+        </a>
+      </div>
     </div>;
 };
 export default Index;
