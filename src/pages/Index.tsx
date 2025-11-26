@@ -6,6 +6,8 @@ import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Input } from "@/components/ui/input";
 import { Link } from "react-router-dom";
+import { Header } from "@/components/Header";
+import aruaitoLogo from "@/assets/arubaito-logo.jpeg";
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { Connection, PublicKey, Transaction, SystemProgram, LAMPORTS_PER_SOL, sendAndConfirmTransaction } from '@solana/web3.js';
 import { createBurnInstruction, TOKEN_PROGRAM_ID } from '@solana/spl-token';
@@ -501,38 +503,7 @@ const Index = () => {
     }
   };
   return <div className="min-h-screen flex flex-col">
-      {/* Header */}
-      <div className="w-full flex justify-between items-center px-8 py-6">
-        <img src={zkProfLogo} alt="zkProf" className="h-8" />
-        
-        {/* Navigation Menu */}
-        <nav className="flex items-center gap-8">
-          <Link to="/" className="text-sm text-[#ed565a] transition-colors">
-            Take Photo
-          </Link>
-          <Link to="/zkpfps" className="text-sm text-foreground hover:text-[#ed565a] transition-colors">
-            zkPFPs
-          </Link>
-          <Link to="/how-to-use" className="text-sm text-foreground hover:text-[#ed565a] transition-colors">
-            How To Use
-          </Link>
-        </nav>
-        
-        {/* Wallet Balance Display */}
-        {connected && walletBalance !== null && solPrice !== null && (
-          <div className="flex items-center gap-2 px-4 py-2 bg-muted/20 border border-border rounded-xl">
-            <Wallet size={16} className="text-secondary" />
-            <div className="flex flex-col">
-              <span className="text-xs font-mono text-secondary">
-                {walletBalance.toFixed(4)} SOL
-              </span>
-              <span className="text-[10px] font-mono text-muted-foreground">
-                ${(walletBalance * solPrice).toFixed(2)} USD
-              </span>
-            </div>
-          </div>
-        )}
-      </div>
+      <Header currentPage="take-photo" walletBalance={walletBalance} solPrice={solPrice} />
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col items-center justify-center px-4 gap-12">
@@ -686,74 +657,16 @@ const Index = () => {
           </div>
         </div>
         </div>
-
-        {/* Minted zkPFPs Section */}
-        {connected && mintedNFTs.length > 0 && (
-          <div className="w-full max-w-4xl">
-            <h3 className="text-xl font-styrene font-black text-secondary mb-4 text-center">
-              Transaction History ({mintedNFTs.length})
-            </h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {mintedNFTs.map((nft) => (
-                <Card key={nft.id} className="bg-muted/20 border-border p-4 space-y-3">
-                  <div className="aspect-square bg-muted/40 rounded-lg flex items-center justify-center border border-border night-vision-effect-static">
-                    <div className="text-center">
-                      <div className="text-2xl mb-1">🔒</div>
-                      <div className="text-xs font-mono text-secondary">Encrypted</div>
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <div className="text-[10px] font-mono text-muted-foreground space-y-1">
-                      <div className="flex items-start justify-between gap-1">
-                        <span className="text-secondary/70">Minted:</span>
-                        <span className="text-right">
-                          {new Date(nft.created_at).toLocaleString("en-US", {
-                            month: "2-digit",
-                            day: "2-digit",
-                            year: "2-digit",
-                            hour: "2-digit",
-                            minute: "2-digit",
-                            hour12: false
-                          })}
-                        </span>
-                      </div>
-                    </div>
-                    
-                    <a
-                      href={`https://solscan.io/tx/${nft.payment_signature}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="block w-full"
-                    >
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="w-full h-8 border-secondary/50 text-secondary hover:bg-secondary/10 hover:border-secondary"
-                      >
-                        <ExternalLink size={12} className="mr-1" />
-                        View Transaction
-                      </Button>
-                    </a>
-                    
-                    <Button
-                      onClick={() => burnNFT(nft.id, nft.mint_address)}
-                      variant="outline"
-                      size="sm"
-                      className="w-full h-8 border-[#ed565a] text-[#ed565a] hover:bg-[#ed565a] hover:text-white"
-                    >
-                      <Trash2 size={12} className="mr-1" />
-                      Burn
-                    </Button>
-                  </div>
-                </Card>
-              ))}
-            </div>
-          </div>
-        )}
       </div>
 
       {/* Footer */}
-      <div className="w-full flex justify-end px-8 py-6">
+      <div className="w-full flex justify-between items-center px-8 py-6">
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-muted-foreground">zkProf by</span>
+          <a href="https://arubaito.app" target="_blank" rel="noopener noreferrer">
+            <img src={aruaitoLogo} alt="Arubaito" className="h-4" />
+          </a>
+        </div>
         <a href="https://github.com/tenshijinn/arubaito" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors">
           <Github size={16} />
           <span>View on GitHub</span>

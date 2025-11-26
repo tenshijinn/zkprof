@@ -2,13 +2,14 @@ import { useEffect, useState } from "react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { Card } from "@/components/ui/card";
-import { Trash2, ExternalLink, Wallet } from "lucide-react";
+import { Trash2, ExternalLink, Github } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import zkProfLogo from "@/assets/zkprof-logo.png";
 import { ZKProofVerifier } from "@/components/ZKProofVerifier";
 import { Link } from "react-router-dom";
+import { Header } from "@/components/Header";
+import aruaitoLogo from "@/assets/arubaito-logo.jpeg";
 
 const ZkPFPs = () => {
   const { publicKey, connected } = useWallet();
@@ -66,28 +67,7 @@ const ZkPFPs = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      {/* Header */}
-      <div className="w-full flex justify-between items-center px-8 py-6">
-        <img src={zkProfLogo} alt="zkProf" className="h-8" />
-        
-        {/* Navigation Menu */}
-        <nav className="flex items-center gap-8">
-          <Link to="/" className="text-sm text-foreground hover:text-[#ed565a] transition-colors">
-            Take Photo
-          </Link>
-          <Link to="/zkpfps" className="text-sm text-[#ed565a] transition-colors">
-            zkPFPs
-          </Link>
-          <Link to="/how-to-use" className="text-sm text-foreground hover:text-[#ed565a] transition-colors">
-            How To Use
-          </Link>
-        </nav>
-        
-        {/* Wallet Connect */}
-        <div>
-          <WalletMultiButton className="!h-10 !rounded-xl !font-styrene !font-black !text-sm !bg-secondary !text-[#181818] !border-2 !border-secondary hover:!bg-transparent hover:!text-[#ed565a] hover:!border-[#ed565a]" />
-        </div>
-      </div>
+      <Header currentPage="zkpfps" />
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col items-center justify-center px-4 py-12">
@@ -188,6 +168,20 @@ const ZkPFPs = () => {
             </div>
           )}
         </div>
+      </div>
+
+      {/* Footer */}
+      <div className="w-full flex justify-between items-center px-8 py-6 mt-auto">
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-muted-foreground">zkProf by</span>
+          <a href="https://arubaito.app" target="_blank" rel="noopener noreferrer">
+            <img src={aruaitoLogo} alt="Arubaito" className="h-4" />
+          </a>
+        </div>
+        <a href="https://github.com/tenshijinn/arubaito" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors">
+          <Github size={16} />
+          <span>View on GitHub</span>
+        </a>
       </div>
     </div>
   );
