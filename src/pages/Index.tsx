@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { Github, Wallet, Trash2, ExternalLink, ChevronDown } from "lucide-react";
+import { Wallet, Trash2, ExternalLink, ChevronDown } from "lucide-react";
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { Connection, PublicKey, Transaction, SystemProgram, LAMPORTS_PER_SOL, sendAndConfirmTransaction } from '@solana/web3.js';
@@ -15,7 +15,6 @@ import faceGuide from "@/assets/pfp-guide.png";
 import zcashLogo from "@/assets/zcash-logo.png";
 import solanaLogo from "@/assets/solana-logo.png";
 import zkProfLogo from "@/assets/zkprof-logo.png";
-import arubaitoLogo from "@/assets/arubaito-logo.png";
 import { Card } from "@/components/ui/card";
 import Navigation from "@/components/Navigation";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
@@ -509,27 +508,11 @@ const Index = () => {
     }
   };
   return <div className="min-h-screen flex flex-col">
-      <Navigation />
-      
-      {/* Header */}
-      <div className="w-full flex justify-between items-center px-8 py-6">
-        <img src={zkProfLogo} alt="zkProf" className="h-8" />
-        
-        {/* Wallet Balance Display */}
-        {connected && walletBalance !== null && solPrice !== null && (
-          <div className="flex items-center gap-2 px-4 py-2 bg-muted/20 border border-border rounded-xl">
-            <Wallet size={16} className="text-secondary" />
-            <div className="flex flex-col">
-              <span className="text-xs font-mono text-secondary">
-                {walletBalance.toFixed(4)} SOL
-              </span>
-              <span className="text-[10px] font-mono text-muted-foreground">
-                ${(walletBalance * solPrice).toFixed(2)} USD
-              </span>
-            </div>
-          </div>
-        )}
-      </div>
+      <Navigation 
+        walletBalance={walletBalance} 
+        solPrice={solPrice} 
+        connected={connected}
+      />
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col items-center justify-center px-4 gap-12">
@@ -744,16 +727,7 @@ const Index = () => {
         )}
       </div>
 
-      {/* Footer */}
-      <div className="w-full flex justify-center items-center gap-6 px-8 py-6">
-        <a href="https://arubaito.app" target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-opacity">
-          <img src={arubaitoLogo} alt="Arubaito" className="h-5" />
-        </a>
-        <a href="https://github.com/tenshijinn/arubaito" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors">
-          <Github size={16} />
-          <span>View on GitHub</span>
-        </a>
-      </div>
+      {/* Footer - removed, now in navigation */}
     </div>;
 };
 export default Index;
