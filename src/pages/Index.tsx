@@ -5,6 +5,7 @@ import { Github, Wallet, Trash2, ExternalLink, ChevronDown } from "lucide-react"
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Input } from "@/components/ui/input";
+import { Link } from "react-router-dom";
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { Connection, PublicKey, Transaction, SystemProgram, LAMPORTS_PER_SOL, sendAndConfirmTransaction } from '@solana/web3.js';
 import { createBurnInstruction, TOKEN_PROGRAM_ID } from '@solana/spl-token';
@@ -503,6 +504,19 @@ const Index = () => {
       {/* Header */}
       <div className="w-full flex justify-between items-center px-8 py-6">
         <img src={zkProfLogo} alt="zkProf" className="h-8" />
+        
+        {/* Navigation Menu */}
+        <nav className="flex items-center gap-8">
+          <Link to="/" className="text-sm text-[#ed565a] transition-colors">
+            Take Photo
+          </Link>
+          <Link to="/zkpfps" className="text-sm text-foreground hover:text-[#ed565a] transition-colors">
+            zkPFPs
+          </Link>
+          <Link to="/how-to-use" className="text-sm text-foreground hover:text-[#ed565a] transition-colors">
+            How To Use
+          </Link>
+        </nav>
         
         {/* Wallet Balance Display */}
         {connected && walletBalance !== null && solPrice !== null && (
