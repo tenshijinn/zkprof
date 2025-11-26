@@ -7,7 +7,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { Input } from "@/components/ui/input";
 import { Link } from "react-router-dom";
 import { Header } from "@/components/Header";
-import aruaitoLogo from "@/assets/arubaito-logo.jpeg";
+import aruaitoLogo from "@/assets/arubaito-logo.png";
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { Connection, PublicKey, Transaction, SystemProgram, LAMPORTS_PER_SOL, sendAndConfirmTransaction } from '@solana/web3.js';
 import { createBurnInstruction, TOKEN_PROGRAM_ID } from '@solana/spl-token';

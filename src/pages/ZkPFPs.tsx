@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import { ZKProofVerifier } from "@/components/ZKProofVerifier";
 import { Link } from "react-router-dom";
 import { Header } from "@/components/Header";
-import aruaitoLogo from "@/assets/arubaito-logo.jpeg";
+import aruaitoLogo from "@/assets/arubaito-logo.png";
 
 const ZkPFPs = () => {
   const { publicKey, connected } = useWallet();
