@@ -1,8 +1,10 @@
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { Github, Wallet, Trash2, ExternalLink } from "lucide-react";
+import { Github, Wallet, Trash2, ExternalLink, ChevronDown } from "lucide-react";
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Input } from "@/components/ui/input";
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { Connection, PublicKey, Transaction, SystemProgram, LAMPORTS_PER_SOL, sendAndConfirmTransaction } from '@solana/web3.js';
 import { createBurnInstruction, TOKEN_PROGRAM_ID } from '@solana/spl-token';
@@ -54,6 +56,8 @@ const Index = () => {
   const [walletBalance, setWalletBalance] = useState<number | null>(null);
   const [solPrice, setSolPrice] = useState<number | null>(null);
   const [mintedNFTs, setMintedNFTs] = useState<any[]>([]);
+  const [userName, setUserName] = useState("");
+  const [isNameOpen, setIsNameOpen] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const pixelationCanvasRef = useRef<HTMLCanvasElement>(null);
@@ -204,6 +208,14 @@ const Index = () => {
       if (context) {
         // Draw the video frame
         context.drawImage(video, 0, 0, 300, 380);
+
+        // Draw the user name on top right if provided
+        if (userName.trim()) {
+          context.fillStyle = "#ffffff";
+          context.font = "bold 14px monospace";
+          context.textAlign = "right";
+          context.fillText(userName.trim(), 290, 20);
+        }
 
         // Draw the timestamp on the photo
         context.fillStyle = "#ffffff";
@@ -537,6 +549,13 @@ const Index = () => {
                 {fps} FPS
               </div>}
 
+            {/* User Name Overlay - only visible during idle state */}
+            {userName.trim() && state === "idle" && (
+              <div className="absolute top-2 right-2 text-white font-bold text-sm bg-black/50 px-2 py-1 rounded font-mono">
+                {userName.trim()}
+              </div>
+            )}
+
             {/* Date/Time Display - always visible, gets captured */}
             <div className="absolute bottom-2 right-2 text-[10px] font-mono text-white bg-black/50 px-2 py-1 rounded">
               {currentTime.toLocaleString("en-US", {
@@ -563,6 +582,32 @@ const Index = () => {
                 </div>
               </div>}
           </div>
+
+          {/* Add Your Name - Collapsible (Only in idle state, before photo taken) */}
+          {state === "idle" && !hasPhoto && (
+            <Collapsible
+              open={isNameOpen}
+              onOpenChange={setIsNameOpen}
+              className="w-[300px]"
+            >
+              <CollapsibleTrigger asChild>
+                <button className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors">
+                  <ChevronDown className={`h-3 w-3 transition-transform ${isNameOpen ? 'rotate-180' : ''}`} />
+                  Add Your Name
+                </button>
+              </CollapsibleTrigger>
+              <CollapsibleContent className="mt-2">
+                <Input
+                  type="text"
+                  placeholder="Enter your name"
+                  value={userName}
+                  onChange={(e) => setUserName(e.target.value)}
+                  maxLength={30}
+                  className="w-full text-sm"
+                />
+              </CollapsibleContent>
+            </Collapsible>
+          )}
 
           {/* Wallet Connect */}
           {!connected && (
