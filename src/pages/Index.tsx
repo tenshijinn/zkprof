@@ -358,7 +358,7 @@ const Index = () => {
       // 7. Create NFT record (on-chain minting requires backend infrastructure)
       // For now, storing commitment hash as proof-of-encryption
       const mintAddr = `zkpfp-${blobId}`;
-      const metadataUri = `https://arweave.net/${encryption.commitment}`;
+      const metadataUri = `zkpfp:commitment:${encryption.commitment}`;
       
       const { error: mintError } = await supabase
         .from('nft_mints')

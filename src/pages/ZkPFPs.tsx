@@ -142,7 +142,7 @@ const ZkPFPs = () => {
                       <div className="text-muted-foreground">
                         <span className="font-semibold">Commitment:</span>
                         <div className="font-mono text-[10px] break-all">
-                          {nft.metadata_uri}
+                          {nft.metadata_uri.replace('https://arweave.net/', '').replace('zkpfp:commitment:', '')}
                         </div>
                       </div>
                       {nft.mint_address && (
