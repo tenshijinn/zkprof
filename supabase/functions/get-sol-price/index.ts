@@ -30,18 +30,29 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    // Fetch fresh price from CoinGecko
-    console.log('Fetching fresh SOL price from CoinGecko...');
+    // Fetch fresh price from Moralis
+    console.log('Fetching fresh SOL price from Moralis...');
+    const moralisApiKey = Deno.env.get('MORALIS_API_KEY');
+    
+    if (!moralisApiKey) {
+      throw new Error('MORALIS_API_KEY not configured');
+    }
+
     const response = await fetch(
-      'https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd'
+      'https://solana-gateway.moralis.io/token/mainnet/So11111111111111111111111111111111111111112/price',
+      {
+        headers: {
+          'X-API-Key': moralisApiKey,
+        },
+      }
     );
 
     if (!response.ok) {
-      throw new Error(`CoinGecko API error: ${response.status}`);
+      throw new Error(`Moralis API error: ${response.status}`);
     }
 
     const data = await response.json();
-    const price = data.solana.usd;
+    const price = data.usdPrice;
 
     // Update cache
     cachedPrice = { price, timestamp: now };
