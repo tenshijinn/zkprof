@@ -27,7 +27,7 @@ export function Header({ currentPage = "take-photo", walletBalance, solPrice }: 
         {/* Desktop Navigation Menu */}
         <nav className="hidden md:flex items-center gap-8">
           <Link 
-            to="/" 
+            to="/take-photo" 
             className={`text-sm transition-colors ${
               currentPage === "take-photo" ? "text-[#ed565a]" : "text-foreground hover:text-[#ed565a]"
             }`}
@@ -87,7 +87,7 @@ export function Header({ currentPage = "take-photo", walletBalance, solPrice }: 
         <div className="md:hidden bg-background border-b border-border">
           <nav className="flex flex-col px-8 py-4 space-y-4">
             <Link 
-              to="/" 
+              to="/take-photo" 
               className={`text-sm transition-colors ${
                 currentPage === "take-photo" ? "text-[#ed565a]" : "text-foreground hover:text-[#ed565a]"
               }`}
