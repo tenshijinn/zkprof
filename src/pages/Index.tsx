@@ -369,7 +369,7 @@ const Index = () => {
           mint_address: mintAddr,
           metadata_uri: metadataUri,
           zk_proof: encryption.zkProof ? serializeProof(encryption.zkProof.proof) : null,
-          zk_public_signals: encryption.zkProof ? encryption.zkProof.proof.publicSignals : null
+          zk_public_signals: encryption.zkProof ? encryption.zkProof.publicSignals : null
         });
 
       if (mintError) throw mintError;

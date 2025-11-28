@@ -13,6 +13,7 @@ export interface ZKProof {
 
 export interface ZKProofResult {
   proof: ZKProof;
+  publicSignals: string[];
   commitment: string;
   walletPubKey: string;
 }
@@ -63,6 +64,7 @@ export async function generateZKProof(
 
     return {
       proof: proof as ZKProof,
+      publicSignals: publicSignals,
       commitment: publicSignals[0], // First public signal is the commitment
       walletPubKey: walletPublicKey,
     };
