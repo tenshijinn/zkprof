@@ -137,6 +137,30 @@ const ZkPFPs = () => {
                       />
                     )}
                     
+                    {/* ZK Transaction Details */}
+                    <div className="space-y-1 text-xs">
+                      <div className="text-muted-foreground">
+                        <span className="font-semibold">Commitment:</span>
+                        <div className="font-mono text-[10px] break-all">
+                          {nft.metadata_uri}
+                        </div>
+                      </div>
+                      {nft.mint_address && (
+                        <div className="text-muted-foreground">
+                          <span className="font-semibold">Mint:</span>
+                          <div className="font-mono text-[10px] break-all">
+                            {nft.mint_address}
+                          </div>
+                        </div>
+                      )}
+                      <div className="text-muted-foreground">
+                        <span className="font-semibold">Signature:</span>
+                        <div className="font-mono text-[10px] break-all">
+                          {nft.payment_signature}
+                        </div>
+                      </div>
+                    </div>
+                    
                     <div className="flex gap-2">
                       <Button
                         variant="outline"
