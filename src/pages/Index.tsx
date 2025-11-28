@@ -628,9 +628,11 @@ const Index = () => {
 
           {/* Success Actions */}
           {state === "success" && <div className="w-full space-y-4">
-              <Button className="w-full h-12 rounded-2xl btn-primary font-styrene font-black text-base text-[#181818]" onClick={() => window.open("https://arubaito.app", "_blank")}>
-                Use on Arubaito Profile
-              </Button>
+              <Link to="/zkpfps" className="w-full block">
+                <Button className="w-full h-12 rounded-2xl btn-primary font-styrene font-black text-base text-[#181818]">
+                  See zkPFP Verification
+                </Button>
+              </Link>
               <Button variant="ghost" onClick={() => window.location.reload()} className="w-full h-12 rounded-2xl font-styrene font-black text-base text-foreground hover:bg-[#e4dac2] hover:text-[#181818]">
                 Restart
               </Button>
