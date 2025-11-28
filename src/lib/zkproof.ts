@@ -54,7 +54,7 @@ export async function generateZKProof(
     const { proof, publicSignals } = await groth16.fullProve(
       input,
       '/zk-artifacts/zkpfp.wasm',
-      '/zk-artifacts/circuit_0001.zkey'
+      '/zk-artifacts/zkpfp_final.zkey'
     );
 
     onProgress?.('Generating zero-knowledge proof...', 80);
