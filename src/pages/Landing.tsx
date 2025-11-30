@@ -21,7 +21,7 @@ const Landing = () => {
   return (
     <div className="min-h-screen text-foreground flex items-end justify-center relative p-0" style={{ backgroundColor: '#faf1e1' }}>
       {/* Center: Parallax Image - Fixed to bottom, no spacing */}
-      <div className="relative aspect-square w-full max-w-[600px] overflow-hidden rounded-t-3xl border-4 border-[#3a3a3a]">
+      <div className="relative aspect-square w-full max-w-[600px] overflow-hidden rounded-t-3xl">
         {/* Bottom layer - encrypted version (always visible) */}
         <img 
           src={zkprofEncrypt} 
@@ -46,7 +46,7 @@ const Landing = () => {
 
       {/* Content - positioned to the right of the image */}
       <div className="absolute right-8 bottom-24 space-y-6 max-w-md">
-        <h1 className="text-3xl md:text-4xl font-styrene font-black leading-tight">
+        <h1 className="text-3xl md:text-4xl font-styrene font-black leading-tight text-black">
           Dox Yourself Privately with{" "}
           <span className="text-primary">Zero Knowledge</span>{" "}
           Profile Picture.
