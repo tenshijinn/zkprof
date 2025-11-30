@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import zkprofTop from "@/assets/zkprof-decrypt.png";
-import zkprofEncrypt from "@/assets/zkprof-encrypt-2.png";
+import zkprofTop from "@/assets/zkprof-decrypt-2.png";
+import zkprofEncrypt from "@/assets/zkprof-encrypt-3.png";
 
 const Landing = () => {
   const [revealAmount, setRevealAmount] = useState(50); // 0-100, controls clip-path reveal
