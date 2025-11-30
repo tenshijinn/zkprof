@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import zkprofTop from "@/assets/zkprof-decrypt-2.png";
-import zkprofEncrypt from "@/assets/zkprof-encrypt-3.png";
+import zkprofTop from "@/assets/zkprof-decrypt-3.png";
+import zkprofEncrypt from "@/assets/zkprof-encrypt-4.png";
 
 const Landing = () => {
   const [revealAmount, setRevealAmount] = useState(50); // 0-100, controls clip-path reveal
@@ -19,7 +19,7 @@ const Landing = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex items-end justify-center relative p-0">
+    <div className="min-h-screen text-foreground flex items-end justify-center relative p-0" style={{ backgroundColor: '#faf1e1' }}>
       {/* Center: Parallax Image - Fixed to bottom, no spacing */}
       <div className="relative aspect-square w-full max-w-[600px] overflow-hidden rounded-t-3xl border-4 border-[#3a3a3a]">
         {/* Bottom layer - encrypted version (always visible) */}
