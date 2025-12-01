@@ -14,6 +14,88 @@ export type Database = {
   }
   public: {
     Tables: {
+      access_grants: {
+        Row: {
+          blob_id: string
+          created_at: string
+          id: string
+          is_active: boolean
+          owner_wallet: string
+          platform_id: string
+          revoked_at: string | null
+        }
+        Insert: {
+          blob_id: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          owner_wallet: string
+          platform_id: string
+          revoked_at?: string | null
+        }
+        Update: {
+          blob_id?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          owner_wallet?: string
+          platform_id?: string
+          revoked_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "access_grants_platform_id_fkey"
+            columns: ["platform_id"]
+            isOneToOne: false
+            referencedRelation: "platform_registrations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      access_sessions: {
+        Row: {
+          blob_id: string
+          created_at: string
+          expires_at: string
+          id: string
+          nda_message: string
+          nda_signature: string
+          payment_amount_usd: number
+          platform_id: string
+          viewer_wallet: string
+        }
+        Insert: {
+          blob_id: string
+          created_at?: string
+          expires_at: string
+          id?: string
+          nda_message: string
+          nda_signature: string
+          payment_amount_usd: number
+          platform_id: string
+          viewer_wallet: string
+        }
+        Update: {
+          blob_id?: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          nda_message?: string
+          nda_signature?: string
+          payment_amount_usd?: number
+          platform_id?: string
+          viewer_wallet?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "access_sessions_platform_id_fkey"
+            columns: ["platform_id"]
+            isOneToOne: false
+            referencedRelation: "platform_registrations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       encrypted_photos: {
         Row: {
           blob_id: string
@@ -50,6 +132,33 @@ export type Database = {
           user_public_key?: string
           zk_proof?: string | null
           zk_public_signals?: string[] | null
+        }
+        Relationships: []
+      }
+      nda_templates: {
+        Row: {
+          created_at: string
+          id: string
+          is_default: boolean | null
+          template_content: string
+          template_name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_default?: boolean | null
+          template_content: string
+          template_name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_default?: boolean | null
+          template_content?: string
+          template_name?: string
+          updated_at?: string
         }
         Relationships: []
       }
@@ -96,6 +205,83 @@ export type Database = {
             referencedColumns: ["blob_id"]
           },
         ]
+      }
+      platform_credit_transactions: {
+        Row: {
+          amount_usd: number
+          balance_after: number
+          created_at: string
+          description: string | null
+          id: string
+          platform_id: string
+          transaction_signature: string | null
+          transaction_type: string
+        }
+        Insert: {
+          amount_usd: number
+          balance_after: number
+          created_at?: string
+          description?: string | null
+          id?: string
+          platform_id: string
+          transaction_signature?: string | null
+          transaction_type: string
+        }
+        Update: {
+          amount_usd?: number
+          balance_after?: number
+          created_at?: string
+          description?: string | null
+          id?: string
+          platform_id?: string
+          transaction_signature?: string | null
+          transaction_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "platform_credit_transactions_platform_id_fkey"
+            columns: ["platform_id"]
+            isOneToOne: false
+            referencedRelation: "platform_registrations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      platform_registrations: {
+        Row: {
+          api_key_hash: string
+          contact_email: string
+          created_at: string
+          credit_balance_usd: number
+          id: string
+          is_active: boolean
+          platform_domain: string
+          platform_name: string
+          updated_at: string
+        }
+        Insert: {
+          api_key_hash: string
+          contact_email: string
+          created_at?: string
+          credit_balance_usd?: number
+          id?: string
+          is_active?: boolean
+          platform_domain: string
+          platform_name: string
+          updated_at?: string
+        }
+        Update: {
+          api_key_hash?: string
+          contact_email?: string
+          created_at?: string
+          credit_balance_usd?: number
+          id?: string
+          is_active?: boolean
+          platform_domain?: string
+          platform_name?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
     }
     Views: {
