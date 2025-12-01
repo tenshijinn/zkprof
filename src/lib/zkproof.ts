@@ -83,10 +83,19 @@ export async function verifyZKProof(
     console.log('Proof structure:', JSON.stringify(proof, null, 2));
     console.log('Public signals:', publicSignals);
     
-    // Load verification key
-    const vKeyResponse = await fetch('/zk-artifacts/verification_key.json');
+    // Load verification key with cache-busting to ensure latest version
+    const cacheBuster = Date.now();
+    console.log(`📥 Fetching verification key with cache-buster: ${cacheBuster}`);
+    const vKeyResponse = await fetch(`/zk-artifacts/verification_key.json?v=${cacheBuster}`);
     const vKey = await vKeyResponse.json();
-    console.log('Verification key loaded successfully');
+    
+    // Log verification key details for debugging key coupling
+    console.log('✅ Verification key loaded successfully');
+    console.log('🔑 Verification key protocol:', vKey.protocol);
+    console.log('🔑 Verification key curve:', vKey.curve);
+    console.log('🔑 Verification key nPublic:', vKey.nPublic);
+    console.log('🔑 Verification key IC length:', vKey.IC?.length);
+    console.log('🔑 First IC element (fingerprint):', vKey.IC?.[0]?.[0]?.substring(0, 20) + '...');
 
     // Verify the proof
     console.log('Calling groth16.verify...');
