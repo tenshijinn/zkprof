@@ -1,4 +1,5 @@
 import { groth16 } from 'snarkjs';
+import { PublicKey } from '@solana/web3.js';
 
 export interface ZKProof {
   pi_a: string[];
@@ -30,10 +31,10 @@ export async function generateZKProof(
   try {
     onProgress?.('Preparing cryptographic inputs...', 0);
     
-    // Convert wallet public key to byte array
+    // Convert wallet public key (base58) to byte array
     const walletPubKeyBytes = Array.from(
-      new Uint8Array(Buffer.from(walletPublicKey, 'base64'))
-    ).slice(0, 32); // Solana pubkey is 32 bytes
+      new PublicKey(walletPublicKey).toBytes()
+    ); // Solana pubkey is 32 bytes
 
     // Prepare circuit inputs
     const input = {

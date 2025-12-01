@@ -268,8 +268,8 @@ const Index = () => {
       setZKProgressMessage("");
 
       // 1. Encrypt the image
-      const publicKeyBase64 = publicKey.toBase58();
-      const encryption = await encryptImage(photoDataUrl, publicKeyBase64, (message, progress) => {
+      const publicKeyBase58 = publicKey.toBase58();
+      const encryption = await encryptImage(photoDataUrl, publicKeyBase58, (message, progress) => {
         setZKProgressMessage(message);
         setZKProgress(progress);
       });
@@ -283,7 +283,7 @@ const Index = () => {
       setProgress(35);
 
       // 3. Upload encrypted image to Supabase Storage
-      const blobId = `${publicKeyBase64}-${Date.now()}`;
+      const blobId = `${publicKeyBase58}-${Date.now()}`;
       const { error: uploadError } = await supabase.storage
         .from('encrypted-pfps')
         .upload(`${blobId}.enc`, encryptedBlob);
@@ -302,7 +302,7 @@ const Index = () => {
         .insert({
           blob_id: blobId,
           encrypted_key: encryption.encryptedKey,
-          user_public_key: publicKeyBase64,
+          user_public_key: publicKeyBase58,
           commitment: encryption.commitment,
           encrypted_image_url: publicUrl,
           iv: encryption.iv,
@@ -363,7 +363,7 @@ const Index = () => {
       const { error: mintError } = await supabase
         .from('nft_mints')
         .insert({
-          user_public_key: publicKeyBase64,
+          user_public_key: publicKeyBase58,
           payment_signature: signature,
           blob_id: blobId,
           mint_address: mintAddr,
