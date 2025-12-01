@@ -307,7 +307,7 @@ const Index = () => {
           encrypted_image_url: publicUrl,
           iv: encryption.iv,
           zk_proof: encryption.zkProof ? serializeProof(encryption.zkProof.proof) : null,
-          zk_public_signals: encryption.zkProof ? encryption.zkProof.proof.publicSignals : null
+          zk_public_signals: encryption.zkProof ? encryption.zkProof.publicSignals : null
         });
 
       if (dbError) throw dbError;

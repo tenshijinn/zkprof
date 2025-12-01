@@ -1,14 +1,11 @@
 import { groth16 } from 'snarkjs';
 
 export interface ZKProof {
-  proof: {
-    pi_a: string[];
-    pi_b: string[][];
-    pi_c: string[];
-    protocol: string;
-    curve: string;
-  };
-  publicSignals: string[];
+  pi_a: string[];
+  pi_b: string[][];
+  pi_c: string[];
+  protocol: string;
+  curve: string;
 }
 
 export interface ZKProofResult {
@@ -82,17 +79,24 @@ export async function verifyZKProof(
   publicSignals: string[]
 ): Promise<boolean> {
   try {
+    console.log('🔍 Starting ZK-SNARK verification...');
+    console.log('Proof structure:', JSON.stringify(proof, null, 2));
+    console.log('Public signals:', publicSignals);
+    
     // Load verification key
     const vKeyResponse = await fetch('/zk-artifacts/verification_key.json');
     const vKey = await vKeyResponse.json();
+    console.log('Verification key loaded successfully');
 
     // Verify the proof
+    console.log('Calling groth16.verify...');
     const isValid = await groth16.verify(vKey, publicSignals, proof);
 
-    console.log('ZK-SNARK proof verification:', isValid ? 'VALID' : 'INVALID');
+    console.log('ZK-SNARK proof verification:', isValid ? '✅ VALID' : '❌ INVALID');
     return isValid;
   } catch (error) {
-    console.error('ZK-SNARK proof verification failed:', error);
+    console.error('❌ ZK-SNARK proof verification failed:', error);
+    console.error('Error details:', error instanceof Error ? error.message : String(error));
     return false;
   }
 }
