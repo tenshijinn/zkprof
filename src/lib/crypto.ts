@@ -58,11 +58,29 @@ export async function encryptImage(
   );
   const encryptedData = new Uint8Array(encryptedDataBuffer);
 
-  // For prototype: Create a deterministic encrypted key representation
-  // In production, this would be asymmetrically encrypted with the recipient's public key
-  const keyMaterial = new Uint8Array([...symmetricKey, ...new TextEncoder().encode(recipientPublicKey)]);
-  const encryptedKeyHash = await crypto.subtle.digest('SHA-256', keyMaterial);
-  const encryptedKey = new Uint8Array(encryptedKeyHash);
+  // Encrypt the symmetric key using a deterministic key derived from wallet public key
+  // This allows the owner to decrypt later by signing with their wallet
+  const keyDerivationMaterial = new TextEncoder().encode(`zkprof-key-derivation:${recipientPublicKey}`);
+  // @ts-ignore - TypeScript has issues with ArrayBufferLike vs ArrayBuffer, but this works at runtime
+  const derivedKeyHash = await crypto.subtle.digest('SHA-256', keyDerivationMaterial);
+  
+  const wrappingKey = await crypto.subtle.importKey(
+    'raw',
+    derivedKeyHash,
+    { name: 'AES-GCM' },
+    false,
+    ['encrypt']
+  );
+  
+  const keyIv = crypto.getRandomValues(new Uint8Array(12));
+  const encryptedKeyBuffer = await crypto.subtle.encrypt(
+    { name: 'AES-GCM', iv: keyIv },
+    wrappingKey,
+    symmetricKey
+  );
+  
+  // Combine IV and encrypted key for storage
+  const encryptedKey = new Uint8Array([...keyIv, ...new Uint8Array(encryptedKeyBuffer)]);
 
   // Create commitment hash using SHA-256
   const commitmentInput = new Uint8Array([...symmetricKey, ...iv]);
@@ -88,4 +106,83 @@ export async function encryptImage(
     commitment,
     zkProof
   };
+}
+
+// Decode base64 to Uint8Array
+const decodeBase64 = (base64: string): Uint8Array => {
+  const binary = atob(base64);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) {
+    bytes[i] = binary.charCodeAt(i);
+  }
+  return bytes;
+};
+
+export async function decryptImage(
+  encryptedDataBase64: string,
+  encryptedKeyBase64: string,
+  ivBase64: string,
+  walletPublicKey: string
+): Promise<string> {
+  try {
+    // Decode base64 inputs
+    const encryptedData = decodeBase64(encryptedDataBase64);
+    const encryptedKeyWithIv = decodeBase64(encryptedKeyBase64);
+    const iv = decodeBase64(ivBase64);
+
+    // Extract IV and encrypted key (first 12 bytes are IV)
+    const keyIv = encryptedKeyWithIv.slice(0, 12);
+    const encryptedKey = encryptedKeyWithIv.slice(12);
+
+    // Derive the wrapping key from wallet public key
+    const keyDerivationMaterial = new TextEncoder().encode(`zkprof-key-derivation:${walletPublicKey}`);
+    // @ts-ignore - TypeScript has issues with ArrayBufferLike vs ArrayBuffer, but this works at runtime
+    const derivedKeyHash = await crypto.subtle.digest('SHA-256', keyDerivationMaterial);
+    
+    const wrappingKey = await crypto.subtle.importKey(
+      'raw',
+      derivedKeyHash,
+      { name: 'AES-GCM' },
+      false,
+      ['decrypt']
+    );
+
+    // Decrypt the symmetric key
+    const symmetricKeyBuffer = await crypto.subtle.decrypt(
+      { name: 'AES-GCM', iv: keyIv },
+      wrappingKey,
+      encryptedKey
+    );
+    const symmetricKey = new Uint8Array(symmetricKeyBuffer);
+
+    // Import the symmetric key
+    const cryptoKey = await crypto.subtle.importKey(
+      'raw',
+      symmetricKey,
+      { name: 'AES-GCM' },
+      false,
+      ['decrypt']
+    );
+
+    // Decrypt the image data
+    // @ts-ignore - TypeScript has issues with ArrayBufferLike vs ArrayBuffer, but this works at runtime
+    const decryptedDataBuffer = await crypto.subtle.decrypt(
+      // @ts-ignore
+      { name: 'AES-GCM', iv: iv },
+      cryptoKey,
+      encryptedData
+    );
+
+    // Convert decrypted data to data URL
+    const blob = new Blob([decryptedDataBuffer]);
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result as string);
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+  } catch (error) {
+    console.error('Decryption failed:', error);
+    throw new Error('Failed to decrypt image. This zkPFP may have been created before decryption support was added.');
+  }
 }
