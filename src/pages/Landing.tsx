@@ -97,7 +97,7 @@ const Landing = () => {
 
       {/* Top left branding */}
       <div className="absolute top-4 left-4 z-10 flex items-center gap-1.5 h-5">
-        <img src={zkprofLogo} alt="zkProf" className="h-5 object-contain" />
+        <img src={zkprofLogo} alt="zkProf" className="h-7 object-contain" />
         <span className="font-styrene text-xs text-black/70 leading-none">by</span>
         <a href="https://arubaito.app" target="_blank" rel="noopener noreferrer">
           <img src={arubaitoLogo} alt="Arubaito" className="h-5 object-contain hover:opacity-80 transition-opacity" />
