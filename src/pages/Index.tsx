@@ -506,16 +506,16 @@ const Index = () => {
       <Header currentPage="take-photo" walletBalance={walletBalance} solPrice={solPrice} />
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col items-center justify-center px-4 gap-12">
-        <div className="w-full max-w-[300px] flex flex-col items-center space-y-8">
+      <div className="flex-1 flex flex-col items-center justify-start md:justify-center px-4 pt-4 md:pt-0 gap-4 md:gap-12">
+        <div className="w-full max-w-[300px] flex flex-col items-center space-y-4 md:space-y-8">
           {/* Main Content */}
-          <div className="w-full flex flex-col items-center space-y-6">
+          <div className="w-full flex flex-col items-center space-y-3 md:space-y-6">
             {/* Title */}
-            <div className="text-center space-y-1">
-              <h2 className="text-2xl font-styrene font-black text-secondary">
+            <div className="text-center space-y-0.5 md:space-y-1">
+              <h2 className="text-lg md:text-2xl font-styrene font-black text-secondary">
                 {state === "success" ? "zkPFP Created" : "Take an Encrypted Photo"}
               </h2>
-              <p className="text-sm text-secondary">
+              <p className="text-xs md:text-sm text-secondary">
                 {state === "success"
                   ? "Your encrypted profile photo is ready"
                   : "Permit decrypt to any entity with ZK + NDA"}
