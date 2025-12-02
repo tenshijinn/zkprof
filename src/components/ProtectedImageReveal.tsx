@@ -138,7 +138,7 @@ export const ProtectedImageReveal = ({
       <div
         ref={containerRef}
         className={cn(
-          "relative w-full max-w-2xl aspect-square overflow-hidden rounded-lg border-2 border-border select-none",
+          "relative w-full max-w-md overflow-hidden rounded-lg border-2 border-border select-none",
           isExpired && "cursor-not-allowed"
         )}
         onMouseMove={handleMouseMove}
@@ -154,7 +154,7 @@ export const ProtectedImageReveal = ({
           src={imageDataUrl}
           alt="Encrypted Profile"
           className={cn(
-            "absolute inset-0 w-full h-full object-cover transition-all duration-300",
+            "w-full h-auto transition-all duration-300",
             isExpired ? "blur-[60px]" : "blur-[40px]"
           )}
           draggable={false}
@@ -173,7 +173,7 @@ export const ProtectedImageReveal = ({
             <img
               src={imageDataUrl}
               alt="Encrypted Profile Reveal"
-              className="w-full h-full object-cover"
+              className="w-full h-auto"
               draggable={false}
               style={{ pointerEvents: 'none' }}
             />
