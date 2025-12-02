@@ -43,9 +43,9 @@ const Landing = () => {
         className="fixed top-0 bottom-0 w-[2px] bg-primary z-20 pointer-events-none"
         style={{ left: `${mouseX}%`, transform: "translateX(-50%)" }}
       >
-        {/* ZK-Encrypted text at top, rotated */}
+        {/* ZK-Encrypted text - positioned lower on mobile to avoid overlap */}
         <span
-          className="absolute top-6 left-4 text-primary font-styrene font-black text-sm tracking-widest whitespace-nowrap"
+          className="absolute top-[60%] md:top-6 left-4 text-primary font-styrene font-black text-sm tracking-widest whitespace-nowrap"
           style={{
             writingMode: "vertical-rl",
             textOrientation: "mixed",
@@ -55,9 +55,9 @@ const Landing = () => {
         </span>
       </div>
 
-      {/* Content - at top on mobile, right side on desktop */}
-      <div className="relative z-10 p-6 md:absolute md:right-8 md:bottom-24 space-y-6 max-w-md">
-        <h1 className="text-3xl md:text-4xl font-styrene font-black leading-tight text-black">
+      {/* Content - centered above image on mobile, right side on desktop */}
+      <div className="relative z-10 p-6 pt-16 md:pt-6 md:absolute md:right-8 md:bottom-24 space-y-6 max-w-md">
+        <h1 className="text-2xl md:text-4xl font-styrene font-black leading-tight text-black">
           Dox Yourself Privately with <span className="text-primary">Zero Knowledge</span> Profile Picture.
         </h1>
 
@@ -68,10 +68,10 @@ const Landing = () => {
         </Link>
       </div>
 
-      {/* Center: Parallax Image - Fixed to bottom, no spacing */}
+      {/* Center: Parallax Image - centered on mobile, bottom on desktop */}
       <div
         ref={imageContainerRef}
-        className="relative aspect-square w-full max-w-[600px] overflow-hidden rounded-t-3xl mt-auto"
+        className="relative aspect-square w-[80%] md:w-full max-w-[600px] overflow-hidden rounded-3xl md:rounded-t-3xl md:rounded-b-none my-auto md:my-0 md:mt-auto mx-auto"
       >
         {/* Bottom layer - encrypted version (always visible) */}
         <img src={zkprofEncrypt} alt="Encrypted profile" className="absolute inset-0 w-full h-full object-cover" />
