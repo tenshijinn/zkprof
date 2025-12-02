@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import zkprofTop from "@/assets/zkprof-decrypt-3.png";
 import zkprofEncrypt from "@/assets/zkprof-encrypt-4.png";
-import zkprofLogo from "@/assets/zkprof-logo.png";
+import zkprofLogoIndex from "@/assets/zkprof-logo-index.png";
 import arubaitoLogo from "@/assets/arubaito-logo.png";
 import zcashLogoFull from "@/assets/zcash-logo-full.svg";
 import solanaLogo from "@/assets/solana-logo.png";
@@ -88,11 +88,15 @@ const Landing = () => {
       </div>
 
       {/* Top left branding */}
-      <div className="absolute top-4 left-4 z-10 flex items-center gap-1.5 h-5">
-        <img src={zkprofLogo} alt="zkProf" className="h-7 object-contain" />
+      <div className="absolute top-4 left-4 z-10">
+        <img src={zkprofLogoIndex} alt="zkProf" className="h-7 object-contain" />
+      </div>
+
+      {/* Bottom right branding */}
+      <div className="absolute bottom-4 right-4 z-10 flex items-center gap-1.5 h-4">
         <span className="font-styrene text-xs text-black/70 leading-none">by</span>
         <a href="https://arubaito.app" target="_blank" rel="noopener noreferrer">
-          <img src={arubaitoLogo} alt="Arubaito" className="h-5 object-contain hover:opacity-80 transition-opacity" />
+          <img src={arubaitoLogo} alt="Arubaito" className="h-2.5 object-contain hover:opacity-80 transition-opacity" />
         </a>
       </div>
 
