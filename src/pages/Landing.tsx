@@ -1,17 +1,31 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import zkprofTop from "@/assets/zkprof-decrypt-3.png";
 import zkprofEncrypt from "@/assets/zkprof-encrypt-4.png";
+import arubaitoLogo from "@/assets/arubaito-logo.png";
+import zcashLogo from "@/assets/zcash-logo.png";
+import solanaLogo from "@/assets/solana-logo.png";
 
 const Landing = () => {
-  const [revealAmount, setRevealAmount] = useState(50); // 0-100, controls clip-path reveal
+  const [mouseX, setMouseX] = useState(50); // percentage across screen
+  const [imageRevealX, setImageRevealX] = useState(50); // percentage across image
+  const imageContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
-      // Calculate reveal based on horizontal mouse position
-      const percentage = (e.clientX / window.innerWidth) * 100;
-      setRevealAmount(percentage);
+      // Calculate mouse position as percentage of screen width for the line
+      const screenPercentage = (e.clientX / window.innerWidth) * 100;
+      setMouseX(screenPercentage);
+
+      // Calculate reveal position relative to image container
+      if (imageContainerRef.current) {
+        const rect = imageContainerRef.current.getBoundingClientRect();
+        if (e.clientX >= rect.left && e.clientX <= rect.right) {
+          const imagePercentage = ((e.clientX - rect.left) / rect.width) * 100;
+          setImageRevealX(Math.max(0, Math.min(100, imagePercentage)));
+        }
+      }
     };
 
     window.addEventListener("mousemove", handleMouseMove);
@@ -19,7 +33,25 @@ const Landing = () => {
   }, []);
 
   return (
-    <div className="min-h-screen text-foreground flex flex-col md:flex-row md:items-end md:justify-center relative p-0" style={{ backgroundColor: '#faf1e1' }}>
+    <div className="min-h-screen text-foreground flex flex-col md:flex-row md:items-end md:justify-center relative p-0 overflow-hidden" style={{ backgroundColor: '#faf1e1' }}>
+      
+      {/* Vertical line that follows mouse */}
+      <div 
+        className="fixed top-0 bottom-0 w-[2px] bg-primary z-20 pointer-events-none"
+        style={{ left: `${mouseX}%`, transform: 'translateX(-50%)' }}
+      >
+        {/* ZK-Encrypted text at top, rotated */}
+        <span 
+          className="absolute top-6 left-4 text-primary font-styrene font-black text-sm tracking-widest whitespace-nowrap"
+          style={{ 
+            writingMode: 'vertical-rl',
+            textOrientation: 'mixed'
+          }}
+        >
+          ZK-ENCRYPTED
+        </span>
+      </div>
+
       {/* Content - at top on mobile, right side on desktop */}
       <div className="relative z-10 p-6 md:absolute md:right-8 md:bottom-24 space-y-6 max-w-md">
         <h1 className="text-3xl md:text-4xl font-styrene font-black leading-tight text-black">
@@ -36,7 +68,10 @@ const Landing = () => {
       </div>
 
       {/* Center: Parallax Image - Fixed to bottom, no spacing */}
-      <div className="relative aspect-square w-full max-w-[600px] overflow-hidden rounded-t-3xl mt-auto">
+      <div 
+        ref={imageContainerRef}
+        className="relative aspect-square w-full max-w-[600px] overflow-hidden rounded-t-3xl mt-auto"
+      >
         {/* Bottom layer - encrypted version (always visible) */}
         <img 
           src={zkprofEncrypt} 
@@ -46,9 +81,9 @@ const Landing = () => {
         
         {/* Top layer - normal version (revealed by mouse) */}
         <div 
-          className="absolute inset-0 transition-all duration-150 ease-out"
+          className="absolute inset-0 transition-none"
           style={{
-            clipPath: `polygon(0 0, ${revealAmount}% 0, ${revealAmount}% 100%, 0 100%)`
+            clipPath: `polygon(0 0, ${imageRevealX}% 0, ${imageRevealX}% 100%, 0 100%)`
           }}
         >
           <img 
@@ -57,6 +92,17 @@ const Landing = () => {
             className="w-full h-full object-cover"
           />
         </div>
+      </div>
+
+      {/* Footer branding */}
+      <div className="absolute bottom-4 left-4 z-10 flex items-center gap-2 text-xs text-black/70">
+        <span className="font-styrene">zkProf by</span>
+        <img src={arubaitoLogo} alt="Arubaito" className="h-5" />
+        <span className="mx-2">|</span>
+        <span className="font-styrene">ZK-Snark Secured with</span>
+        <img src={zcashLogo} alt="ZCash" className="h-4" />
+        <span className="font-styrene">using</span>
+        <img src={solanaLogo} alt="Solana" className="h-4" />
       </div>
     </div>
   );
