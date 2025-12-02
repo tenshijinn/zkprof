@@ -14,3 +14,15 @@ verify_jwt = false
 
 [functions.revoke-access]
 verify_jwt = false
+
+[functions.get-nda-template]
+verify_jwt = false
+
+[functions.sign-nda]
+verify_jwt = false
+
+[functions.reveal-zkpfp]
+verify_jwt = false
+
+[functions.platform-topup]
+verify_jwt = false

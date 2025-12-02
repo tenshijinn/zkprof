@@ -9,6 +9,7 @@ import Index from "./pages/Index";
 import ZkPFPs from "./pages/ZkPFPs";
 import HowToUse from "./pages/HowToUse";
 import ManageSharing from "./pages/ManageSharing";
+import NDA from "./pages/NDA";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -26,6 +27,7 @@ const App = () => (
             <Route path="/zkpfps" element={<ZkPFPs />} />
             <Route path="/how-to-use" element={<HowToUse />} />
             <Route path="/manage-sharing" element={<ManageSharing />} />
+            <Route path="/nda" element={<NDA />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
