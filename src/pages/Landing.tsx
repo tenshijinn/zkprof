@@ -34,19 +34,21 @@ const Landing = () => {
   }, []);
 
   return (
-    <div className="min-h-screen text-foreground flex flex-col md:flex-row md:items-end md:justify-center relative p-0 overflow-hidden" style={{ backgroundColor: '#faf1e1' }}>
-      
+    <div
+      className="min-h-screen text-foreground flex flex-col md:flex-row md:items-end md:justify-center relative p-0 overflow-hidden"
+      style={{ backgroundColor: "#faf1e1" }}
+    >
       {/* Vertical line that follows mouse */}
-      <div 
+      <div
         className="fixed top-0 bottom-0 w-[2px] bg-primary z-20 pointer-events-none"
-        style={{ left: `${mouseX}%`, transform: 'translateX(-50%)' }}
+        style={{ left: `${mouseX}%`, transform: "translateX(-50%)" }}
       >
         {/* ZK-Encrypted text at top, rotated */}
-        <span 
+        <span
           className="absolute top-6 left-4 text-primary font-styrene font-black text-sm tracking-widest whitespace-nowrap"
-          style={{ 
-            writingMode: 'vertical-rl',
-            textOrientation: 'mixed'
+          style={{
+            writingMode: "vertical-rl",
+            textOrientation: "mixed",
           }}
         >
           ZK-ENCRYPTED
@@ -56,11 +58,9 @@ const Landing = () => {
       {/* Content - at top on mobile, right side on desktop */}
       <div className="relative z-10 p-6 md:absolute md:right-8 md:bottom-24 space-y-6 max-w-md">
         <h1 className="text-3xl md:text-4xl font-styrene font-black leading-tight text-black">
-          Dox Yourself Privately with{" "}
-          <span className="text-primary">Zero Knowledge</span>{" "}
-          Profile Picture.
+          Dox Yourself Privately with <span className="text-primary">Zero Knowledge</span> Profile Picture.
         </h1>
-        
+
         <Link to="/take-photo">
           <Button className="h-12 px-6 rounded-2xl btn-primary font-styrene font-black text-base text-[#181818] hover:bg-primary/90">
             Take a zK Picture
@@ -69,29 +69,21 @@ const Landing = () => {
       </div>
 
       {/* Center: Parallax Image - Fixed to bottom, no spacing */}
-      <div 
+      <div
         ref={imageContainerRef}
         className="relative aspect-square w-full max-w-[600px] overflow-hidden rounded-t-3xl mt-auto"
       >
         {/* Bottom layer - encrypted version (always visible) */}
-        <img 
-          src={zkprofEncrypt} 
-          alt="Encrypted profile" 
-          className="absolute inset-0 w-full h-full object-cover"
-        />
-        
+        <img src={zkprofEncrypt} alt="Encrypted profile" className="absolute inset-0 w-full h-full object-cover" />
+
         {/* Top layer - normal version (revealed by mouse) */}
-        <div 
+        <div
           className="absolute inset-0 transition-none"
           style={{
-            clipPath: `polygon(0 0, ${imageRevealX}% 0, ${imageRevealX}% 100%, 0 100%)`
+            clipPath: `polygon(0 0, ${imageRevealX}% 0, ${imageRevealX}% 100%, 0 100%)`,
           }}
         >
-          <img 
-            src={zkprofTop} 
-            alt="Normal profile" 
-            className="w-full h-full object-cover"
-          />
+          <img src={zkprofTop} alt="Normal profile" className="w-full h-full object-cover" />
         </div>
       </div>
 
@@ -108,7 +100,7 @@ const Landing = () => {
       <div className="absolute bottom-4 left-4 z-10 flex items-center gap-1.5 h-5">
         <span className="font-styrene text-xs text-black/70 leading-none">ZK-Snark Secured with</span>
         <img src={zcashLogoFull} alt="ZCash" className="h-5 object-contain" />
-        <span className="font-styrene text-xs text-black/70 leading-none">using</span>
+        <span className="font-styrene text-xs text-black/70 leading-none">using Solana x402</span>
         <img src={solanaLogo} alt="Solana" className="h-5 object-contain" />
       </div>
     </div>
