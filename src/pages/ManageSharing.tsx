@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import { Loader2, ExternalLink, Shield } from "lucide-react";
+import { useWalletBalance } from "@/hooks/useWalletBalance";
 
 interface Platform {
   id: string;
@@ -29,6 +30,7 @@ interface AccessGrant {
 
 const ManageSharing = () => {
   const { publicKey, signMessage } = useWallet();
+  const { walletBalance, solPrice } = useWalletBalance();
   const [platforms, setPlatforms] = useState<Platform[]>([]);
   const [nfts, setNfts] = useState<NFT[]>([]);
   const [accessGrants, setAccessGrants] = useState<Record<string, AccessGrant[]>>({});
@@ -142,9 +144,9 @@ const ManageSharing = () => {
 
   if (!publicKey) {
     return (
-      <>
-        <Header currentPage="manage-sharing" />
-        <div className="min-h-screen bg-background flex items-center justify-center px-4">
+      <div className="min-h-screen flex flex-col">
+        <Header currentPage="manage-sharing" walletBalance={walletBalance} solPrice={solPrice} />
+        <div className="flex-1 flex items-center justify-center px-4">
           <Card className="max-w-md w-full">
             <CardHeader>
               <CardTitle>Connect Wallet</CardTitle>
@@ -154,15 +156,15 @@ const ManageSharing = () => {
             </CardHeader>
           </Card>
         </div>
-      </>
+      </div>
     );
   }
 
   return (
-    <>
-      <Header currentPage="manage-sharing" />
-      <div className="min-h-screen bg-background px-4 py-8">
-        <div className="max-w-6xl mx-auto">
+    <div className="min-h-screen flex flex-col">
+      <Header currentPage="manage-sharing" walletBalance={walletBalance} solPrice={solPrice} />
+      <div className="flex-1 flex flex-col items-center px-4 py-12">
+        <div className="w-full max-w-[800px]">
           <div className="mb-8">
             <h1 className="text-4xl font-bold mb-2">Manage zkPFP Sharing</h1>
             <p className="text-muted-foreground">
@@ -259,7 +261,7 @@ const ManageSharing = () => {
           )}
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

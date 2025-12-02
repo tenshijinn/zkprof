@@ -1,18 +1,20 @@
-import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { Card } from "@/components/ui/card";
 import { Camera, Lock, Zap, Shield, Github } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Header } from "@/components/Header";
 import aruaitoLogo from "@/assets/arubaito-logo.png";
+import { useWalletBalance } from "@/hooks/useWalletBalance";
 
 const HowToUse = () => {
+  const { walletBalance, solPrice } = useWalletBalance();
+
   return (
     <div className="min-h-screen flex flex-col">
-      <Header currentPage="how-to-use" />
+      <Header currentPage="how-to-use" walletBalance={walletBalance} solPrice={solPrice} />
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col items-center px-4 py-12">
-        <div className="w-full max-w-4xl">
+        <div className="w-full max-w-[800px]">
           <div className="text-center mb-12">
             <h1 className="text-3xl font-styrene font-black text-secondary mb-2">How To Use zkProf</h1>
             <p className="text-sm text-muted-foreground">Create encrypted profile photos with zero-knowledge proofs</p>
