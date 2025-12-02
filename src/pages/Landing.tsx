@@ -92,20 +92,23 @@ const Landing = () => {
         <img src={zkprofLogoIndex} alt="zkProf" className="h-7 object-contain" />
       </div>
 
-      {/* Bottom right branding */}
-      <div className="absolute bottom-4 right-4 z-10 flex items-center gap-1.5 h-4">
-        <span className="font-styrene text-xs text-black/70 leading-none">by</span>
-        <a href="https://arubaito.app" target="_blank" rel="noopener noreferrer">
-          <img src={arubaitoLogo} alt="Arubaito" className="h-2.5 object-contain hover:opacity-80 transition-opacity" />
-        </a>
-      </div>
-
-      {/* Footer branding */}
-      <div className="absolute bottom-4 left-4 z-10 flex items-center gap-1.5 h-5">
-        <span className="font-styrene text-xs text-black/70 leading-none">ZK-Snark Secured with</span>
-        <img src={zcashLogoFull} alt="ZCash" className="h-5 object-contain" />
-        <span className="font-styrene text-xs text-black/70 leading-none">using Solana x402</span>
-        <img src={solanaLogo} alt="Solana" className="h-5 object-contain" />
+      {/* Footer branding - stacked on mobile, side by side on desktop */}
+      <div className="absolute bottom-4 left-4 right-4 z-10 flex flex-col md:flex-row md:justify-between items-center gap-2 md:gap-0">
+        {/* ZK branding */}
+        <div className="flex items-center gap-1.5 h-5">
+          <span className="font-styrene text-xs text-black/70 leading-none">ZK-Snark Secured with</span>
+          <img src={zcashLogoFull} alt="ZCash" className="h-5 object-contain" />
+          <span className="font-styrene text-xs text-black/70 leading-none">using Solana x402</span>
+          <img src={solanaLogo} alt="Solana" className="h-5 object-contain" />
+        </div>
+        
+        {/* By Arubaito - centered below on mobile, right on desktop */}
+        <div className="flex items-center gap-1.5 h-4">
+          <span className="font-styrene text-xs text-black/70 leading-none">by</span>
+          <a href="https://arubaito.app" target="_blank" rel="noopener noreferrer">
+            <img src={arubaitoLogo} alt="Arubaito" className="h-2.5 object-contain hover:opacity-80 transition-opacity" />
+          </a>
+        </div>
       </div>
     </div>
   );
