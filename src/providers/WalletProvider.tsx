@@ -10,19 +10,13 @@ interface Props {
   children: ReactNode;
 }
 
-// Force rebuild v2 to pick up VITE_SOLANA_RPC_ENDPOINT from .env
+// Helius mainnet RPC endpoint - required to avoid public endpoint rate limits
+const HELIUS_RPC_ENDPOINT = 'https://mainnet.helius-rpc.com/?api-key=c7382c22-ce31-4a55-a0d1-c3f3d51e2091';
+
 export const SolanaWalletProvider: FC<Props> = ({ children }) => {
   const endpoint = useMemo(() => {
-    // Use custom RPC endpoint from secrets if available, otherwise fall back to mainnet
-    const customEndpoint = import.meta.env.VITE_SOLANA_RPC_ENDPOINT;
-    const finalEndpoint = customEndpoint || clusterApiUrl('mainnet-beta');
-    
-    console.log('🔗 Solana RPC Configuration:');
-    console.log('  Custom endpoint defined:', !!customEndpoint);
-    console.log('  Using endpoint:', finalEndpoint);
-    console.log('  Network:', finalEndpoint.includes('devnet') ? 'DEVNET' : finalEndpoint.includes('testnet') ? 'TESTNET' : 'MAINNET');
-    
-    return finalEndpoint;
+    console.log('🔗 Solana RPC: Using Helius mainnet endpoint');
+    return HELIUS_RPC_ENDPOINT;
   }, []);
   const wallets = useMemo(() => [new PhantomWalletAdapter()], []);
 
