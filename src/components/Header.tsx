@@ -19,13 +19,14 @@ export function Header({ currentPage = "take-photo", walletBalance, solPrice }: 
   return (
     <>
       {/* Header */}
-      <div className="w-full flex justify-between items-center px-8 py-6">
-        <Link to="/">
+      <div className="w-full flex items-center px-8 py-6 relative">
+        {/* Logo - Left */}
+        <Link to="/" className="flex-shrink-0">
           <img src={zkProfLogo} alt="zkProf" className="h-8" />
         </Link>
         
-        {/* Desktop Navigation Menu */}
-        <nav className="hidden md:flex items-center gap-8">
+        {/* Desktop Navigation Menu - Centered */}
+        <nav className="hidden md:flex items-center gap-8 absolute left-1/2 -translate-x-1/2">
           <Link 
             to="/take-photo" 
             className={`text-sm transition-colors ${
@@ -64,14 +65,14 @@ export function Header({ currentPage = "take-photo", walletBalance, solPrice }: 
         <Button
           variant="ghost"
           size="icon"
-          className="md:hidden"
+          className="md:hidden ml-auto"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
         >
           {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
         </Button>
         
-        {/* Desktop Wallet Balance */}
-        <div className="hidden md:block">
+        {/* Desktop Wallet Balance - Right */}
+        <div className="hidden md:block ml-auto">
           {connected && typeof walletBalance === 'number' && typeof solPrice === 'number' ? (
             <div className="flex items-center gap-2 px-4 py-2 bg-muted/20 border border-border rounded-xl">
               <Wallet size={16} className="text-secondary" />

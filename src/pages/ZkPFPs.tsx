@@ -13,9 +13,11 @@ import aruaitoLogo from "@/assets/arubaito-logo.png";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ProtectedImageReveal } from "@/components/ProtectedImageReveal";
 import { decryptImage } from "@/lib/crypto";
+import { useWalletBalance } from "@/hooks/useWalletBalance";
 
 const ZkPFPs = () => {
   const { publicKey, connected } = useWallet();
+  const { walletBalance, solPrice } = useWalletBalance();
   const [mintedNFTs, setMintedNFTs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [decryptedImage, setDecryptedImage] = useState<string | null>(null);
@@ -133,11 +135,11 @@ const ZkPFPs = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Header currentPage="zkpfps" />
+      <Header currentPage="zkpfps" walletBalance={walletBalance} solPrice={solPrice} />
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col items-center justify-center px-4 py-12">
-        <div className="w-full max-w-6xl">
+      <div className="flex-1 flex flex-col items-center px-4 py-12">
+        <div className="w-full max-w-[800px]">
           <div className="text-center mb-8">
             <h1 className="text-3xl font-styrene font-black text-secondary mb-2">Your zkPFPs</h1>
             <p className="text-sm text-muted-foreground">View and manage your encrypted profile photos</p>
