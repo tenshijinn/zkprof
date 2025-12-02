@@ -55,35 +55,53 @@ export type Database = {
       access_sessions: {
         Row: {
           blob_id: string
+          consent_given: boolean | null
           created_at: string
           expires_at: string
           id: string
+          nda_hash: string | null
           nda_message: string
           nda_signature: string
           payment_amount_usd: number
           platform_id: string
+          signer_ip: string | null
+          signer_user_agent: string | null
+          signing_timestamp: string | null
+          solana_memo_signature: string | null
           viewer_wallet: string
         }
         Insert: {
           blob_id: string
+          consent_given?: boolean | null
           created_at?: string
           expires_at: string
           id?: string
+          nda_hash?: string | null
           nda_message: string
           nda_signature: string
           payment_amount_usd: number
           platform_id: string
+          signer_ip?: string | null
+          signer_user_agent?: string | null
+          signing_timestamp?: string | null
+          solana_memo_signature?: string | null
           viewer_wallet: string
         }
         Update: {
           blob_id?: string
+          consent_given?: boolean | null
           created_at?: string
           expires_at?: string
           id?: string
+          nda_hash?: string | null
           nda_message?: string
           nda_signature?: string
           payment_amount_usd?: number
           platform_id?: string
+          signer_ip?: string | null
+          signer_user_agent?: string | null
+          signing_timestamp?: string | null
+          solana_memo_signature?: string | null
           viewer_wallet?: string
         }
         Relationships: [
@@ -205,6 +223,30 @@ export type Database = {
             referencedColumns: ["blob_id"]
           },
         ]
+      }
+      platform_credit_topups: {
+        Row: {
+          amount_usd: number
+          created_at: string | null
+          id: string
+          platform_id: string
+          solana_signature: string
+        }
+        Insert: {
+          amount_usd: number
+          created_at?: string | null
+          id?: string
+          platform_id: string
+          solana_signature: string
+        }
+        Update: {
+          amount_usd?: number
+          created_at?: string | null
+          id?: string
+          platform_id?: string
+          solana_signature?: string
+        }
+        Relationships: []
       }
       platform_credit_transactions: {
         Row: {

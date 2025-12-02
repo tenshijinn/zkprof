@@ -5,7 +5,7 @@ import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import zkProfLogo from "@/assets/zkprof-logo.png";
 
 interface HeaderProps {
-  currentPage?: "take-photo" | "zkpfps" | "how-to-use" | "manage-sharing";
+  currentPage?: "take-photo" | "zkpfps" | "how-to-use" | "manage-sharing" | "nda";
   walletBalance?: number | null;
   solPrice?: number | null;
 }
