@@ -3,8 +3,9 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import zkprofTop from "@/assets/zkprof-decrypt-3.png";
 import zkprofEncrypt from "@/assets/zkprof-encrypt-4.png";
+import zkprofLogo from "@/assets/zkprof-logo.png";
 import arubaitoLogo from "@/assets/arubaito-logo.png";
-import zcashLogo from "@/assets/zcash-logo.png";
+import zcashLogoFull from "@/assets/zcash-logo-full.svg";
 import solanaLogo from "@/assets/solana-logo.png";
 
 const Landing = () => {
@@ -94,13 +95,19 @@ const Landing = () => {
         </div>
       </div>
 
+      {/* Top left branding */}
+      <div className="absolute top-4 left-4 z-10 flex items-center gap-2">
+        <img src={zkprofLogo} alt="zkProf" className="h-6" />
+        <span className="font-styrene text-sm text-black/70">by</span>
+        <a href="https://arubaito.app" target="_blank" rel="noopener noreferrer">
+          <img src={arubaitoLogo} alt="Arubaito" className="h-5 hover:opacity-80 transition-opacity" />
+        </a>
+      </div>
+
       {/* Footer branding */}
       <div className="absolute bottom-4 left-4 z-10 flex items-center gap-2 text-xs text-black/70">
-        <span className="font-styrene">zkProf by</span>
-        <img src={arubaitoLogo} alt="Arubaito" className="h-5" />
-        <span className="mx-2">|</span>
         <span className="font-styrene">ZK-Snark Secured with</span>
-        <img src={zcashLogo} alt="ZCash" className="h-4" />
+        <img src={zcashLogoFull} alt="ZCash" className="h-4" />
         <span className="font-styrene">using</span>
         <img src={solanaLogo} alt="Solana" className="h-4" />
       </div>
