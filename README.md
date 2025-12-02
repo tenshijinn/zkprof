@@ -10,7 +10,7 @@ zkProf is a privacy-focused platform that lets you create encrypted profile phot
 
 ### What You Can Do with zkProf
 
-1. **Take Encrypted Photos**: Capture a profile photo through your webcam. The photo is immediately encrypted using advanced cryptography, ensuring no one—not even zkProf—can view it without your permission.
+1. **Take Encrypted Photos**: Capture a profile photo through your webcam or phone. The photo is immediately encrypted using advanced cryptography, ensuring no one—not even zkProf—can view it without your permission.
 
 2. **Prove It's Encrypted (Without Revealing Your Keys)**: Using zero-knowledge proof technology (ZK-SNARKs), zkProf creates mathematical proof that your photo was properly encrypted, without ever revealing your encryption keys. This proof is recorded on the Solana blockchain as permanent, tamper-proof evidence.
 
@@ -35,7 +35,7 @@ zkProf is a privacy-focused platform that lets you create encrypted profile phot
 1. Connect your Solana wallet (like Phantom)
 2. Take a photo with your webcam
 3. The photo is encrypted and a proof is created automatically
-4. A record is saved to the Solana blockchain (costs ~$0.01 in SOL)
+4. A record is saved to the Solana blockchain (costs ~$5.00 in SOL)
 5. Your encrypted photo is stored securely
 6. You control who can see it through the Manage Sharing page
 
@@ -59,6 +59,7 @@ zkProf is an open-source platform for zero-knowledge encrypted profile photos wi
 ## Tech Stack
 
 **Frontend:**
+
 - React 18 + TypeScript
 - Vite build system
 - TailwindCSS for styling
@@ -66,14 +67,17 @@ zkProf is an open-source platform for zero-knowledge encrypted profile photos wi
 - snarkjs (ZK-SNARK proof generation in browser)
 
 **Backend:**
+
 - Supabase (PostgreSQL database + Edge Functions + Storage)
 - Deno (Edge Functions runtime)
 
 **Blockchain:**
+
 - Solana (mainnet/devnet for on-chain proof and payments)
 - x402 Payment Protocol (SOL/USDC/USDT payments for API access)
 
 **Cryptography:**
+
 - **ZK-SNARKs** (Zero-Knowledge Succinct Non-Interactive Argument of Knowledge) - Part of **ZCash cryptography research**
 - Circom (ZK circuit design language)
 - snarkjs (Groth16 proving system)
@@ -111,6 +115,7 @@ chmod +x setup-zk-artifacts.sh
 ```
 
 This script will:
+
 - Install Circom and snarkjs (if not already installed)
 - Compile the `circuits/zkpfp.circom` circuit
 - Run Powers of Tau ceremony
@@ -118,6 +123,7 @@ This script will:
 - Copy artifacts to `public/zk-artifacts/`
 
 **Expected artifacts:**
+
 - `public/zk-artifacts/zkpfp.wasm` (~2MB)
 - `public/zk-artifacts/zkpfp_final.zkey` (~3MB)
 - `public/zk-artifacts/verification_key.json` (~1KB)
@@ -138,6 +144,7 @@ supabase db reset
 ```
 
 **Key tables:**
+
 - `encrypted_photos`: Stores encrypted image URLs, commitments, ZK proofs
 - `nft_mints`: Records minted NFT addresses and metadata
 - `platform_registrations`: Third-party platform API keys and credit balances
@@ -184,6 +191,7 @@ SOLANA_RPC_ENDPOINT=your-rpc-endpoint
 ```
 
 **Important Notes:**
+
 - `VITE_SOLANA_RPC_ENDPOINT` must use `VITE_` prefix to be accessible in browser
 - Wallet network and RPC endpoint MUST match (both mainnet or both devnet)
 - Changes to `VITE_` variables require rebuild to take effect (Vite bakes them at build time)
@@ -219,27 +227,38 @@ Application will be available at `http://localhost:8080`
 
 ### Third-Party API Flow
 
-**Complete Integration Flow:**
+1. **Platform Registration**: Platform registers via `/register-platform` edge function
+2. **User Grants Access**: User A grants platform access to specific zkPFP via UI
+3. **Viewer Signs NDA**: User B (viewer) signs NDA with Solana wallet on platform
+4. **Platform Pays**: Platform pays $0.50 per reveal (deducted from prepaid credits)
+5. **Image Reveal**: Platform receives time-limited URL (60 min) + verification metadata
+6. **Session Tracking**: Each viewer gets individual session tracked in `access_sessions`
 
-1. **Platform Registration**: Platform registers via `/register-platform`, receives API key
-2. **Credit Top-Up**: Platform sends SOL/USDC/USDT to zkProf treasury via x402 payment protocol with platform ID in memo
-3. **User Grants Access**: User A grants platform access to specific zkPFP via UI, signs authorization message with wallet
-4. **Viewer Signs NDA**: User B (viewer) on platform's website signs NDA message with Solana wallet (cryptographic signature = legal agreement)
-5. **Platform Requests Image**: Platform calls `/reveal-zkpfp` with API key, blob_id, viewer wallet, NDA signature
-6. **Payment Deduction**: zkProf deducts $0.50 from platform's credit balance
-7. **Image Delivery**: Platform receives time-limited URL (60 min) + base64-encoded image + ZK verification metadata
-8. **Session Tracking**: Each viewer-image combination tracked in `access_sessions` table with individual expiration
-9. **Display**: Platform displays image to User B using recommended protected viewer component
+## Third-Party Platform Integration
 
-**Security & Compliance:**
-- Wallet signatures serve as cryptographic proof of NDA acceptance
-- Time-limited URLs prevent long-term redistribution
-- Each viewer session tracked independently
-- Platform credit transactions logged with signatures for audit trail
+zkProf provides a complete API for third-party platforms (dating apps, social networks, professional platforms) to access user-encrypted photos through an NDA-gated, payment-based system.
 
-## Third-Party API Documentation
+### Integration Overview
 
-This section covers the complete API for developers building third-party integrations with zkProf.
+**Business Model:**
+
+- User A grants platform access to their zkPFP (free for user)
+- User B views the image on the platform (free for viewer)
+- Platform pays zkProf $0.50 USD per API call via **x402 payment rails on Solana**
+- Platforms operate on prepaid credit system (top-up and debit model)
+
+**Payment Methods:**
+
+- SOL (Solana native token)
+- USDC (USD Coin stablecoin)
+- USDT (Tether stablecoin)
+
+**Access Requirements:**
+
+1. User A explicitly grants platform access to specific zkPFP
+2. User B (viewer) cryptographically signs NDA using Solana wallet
+3. Platform has sufficient prepaid credits
+4. Each viewer receives individual 60-minute time-limited URL
 
 ### API Endpoints
 
@@ -250,6 +269,7 @@ All edge functions are deployed at: `https://chfqfdxpccxfmonhitjd.supabase.co/fu
 **Endpoint:** `POST /register-platform`
 
 **Request:**
+
 ```json
 {
   "platform_name": "YourPlatform",
@@ -259,6 +279,7 @@ All edge functions are deployed at: `https://chfqfdxpccxfmonhitjd.supabase.co/fu
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -274,6 +295,7 @@ All edge functions are deployed at: `https://chfqfdxpccxfmonhitjd.supabase.co/fu
 Platforms must maintain prepaid credit balance to make API calls. Credits are purchased using x402 payment protocol on Solana.
 
 **Payment Process:**
+
 1. Platform initiates Solana transaction sending payment (SOL/USDC/USDT) to zkProf treasury wallet
 2. Transaction memo includes platform ID for credit attribution
 3. zkProf backend monitors blockchain for incoming payments
@@ -281,6 +303,7 @@ Platforms must maintain prepaid credit balance to make API calls. Credits are pu
 5. Transaction is recorded in `platform_credit_transactions` table
 
 **Pricing:**
+
 - $0.50 USD per zkPFP reveal/API call
 - Minimum top-up: $10 USD equivalent (20 reveals)
 - Credits never expire
@@ -290,11 +313,13 @@ Platforms must maintain prepaid credit balance to make API calls. Credits are pu
 **Endpoint:** `POST /platform-balance`
 
 **Headers:**
+
 ```
 X-API-Key: your-api-key
 ```
 
 **Response:**
+
 ```json
 {
   "platform_id": "uuid",
@@ -311,6 +336,7 @@ User A must explicitly grant platform access to their zkPFP before any viewers c
 **Endpoint:** `POST /grant-access`
 
 **Request:**
+
 ```json
 {
   "blob_id": "zkpfp-blob-id",
@@ -321,11 +347,13 @@ User A must explicitly grant platform access to their zkPFP before any viewers c
 ```
 
 **Signature Message Format:**
+
 ```
 Grant access to zkPFP {blob_id} for platform {platform_id}
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -333,63 +361,12 @@ Grant access to zkPFP {blob_id} for platform {platform_id}
 }
 ```
 
-### 5. Reveal zkPFP (Platform Pays, Viewer Gets Image)
-
-After User A grants access and User B signs NDA, platform calls this endpoint to retrieve decrypted image.
-
-**Endpoint:** `POST /reveal-zkpfp`
-
-**Headers:**
-```
-X-API-Key: your-api-key
-Content-Type: application/json
-```
-
-**Request:**
-```json
-{
-  "blob_id": "zkpfp-blob-id",
-  "platform_id": "your-platform-id",
-  "owner_wallet": "user-a-wallet-pubkey",
-  "viewer_wallet": "user-b-wallet-pubkey",
-  "nda_signature": "base64-encoded-signature",
-  "nda_message": "I agree to NDA terms for zkPFP {blob_id}..."
-}
-```
-
-**NDA Message Format:**
-```
-I agree to the terms of the Non-Disclosure Agreement for accessing zkPFP {blob_id} owned by {owner_wallet} on platform {platform_id} at {timestamp}. I understand this access is time-limited to 60 minutes and I must not screenshot, record, or redistribute this image.
-```
-
-**Response:**
-```json
-{
-  "success": true,
-  "image_url": "https://...supabase.co/storage/v1/object/sign/encrypted-pfps/...",
-  "image_base64": "data:image/png;base64,iVBORw0KGgoAAAANS...",
-  "expires_at": "2024-01-01T12:00:00Z",
-  "verification": {
-    "zk_proof_verified": true,
-    "commitment": "hash-value",
-    "verification_timestamp": "2024-01-01T11:00:00Z"
-  },
-  "session_id": "uuid",
-  "cost_usd": 0.50
-}
-```
-
-**Payment Deduction:**
-- $0.50 USD automatically deducted from platform's prepaid credit balance
-- If insufficient credits, returns error: `{"error": "Insufficient credits"}`
-- Each viewer gets individual session with separate 60-minute expiration
-- Same viewer accessing same image multiple times = multiple charges
-
-### 6. Revoke Access
+### 4. Revoke Access
 
 **Endpoint:** `POST /revoke-access`
 
 **Request:**
+
 ```json
 {
   "blob_id": "zkpfp-blob-id",
@@ -400,58 +377,22 @@ I agree to the terms of the Non-Disclosure Agreement for accessing zkPFP {blob_i
 ```
 
 **Signature Message Format:**
+
 ```
 Revoke access to zkPFP {blob_id} for platform {platform_id}
 ```
 
-### Integration Best Practices
-
-**For Third-Party Platforms:**
-
-1. **Credit Management**: Monitor credit balance via `/platform-balance`. Set up alerts at threshold (e.g., $20 remaining)
-
-2. **NDA Signature Collection**: Use Solana wallet adapter to collect viewer signatures. Message must match exact format specified in `/reveal-zkpfp` documentation
-
-3. **Image Display**: Use protected viewer component with:
-   - Screenshot deterrents (CSS + JS protections)
-   - Wallet watermark overlay
-   - Time-limited display matching URL expiration
-   - Visual indicators when URL expires
-
-4. **Error Handling**: Handle insufficient credits, expired grants, invalid signatures gracefully with user-friendly messages
-
-5. **Cost Transparency**: Display cost ($0.50 per view) to platform admins in dashboard
-
-**x402 Payment Protocol:**
-
-x402 is a Solana-based payment protocol enabling micropayments with transaction memos for attribution.
-
-- **Supported Tokens**: SOL, USDC, USDT via standard Solana token transfers
-- **Memo Format**: `zkprof-topup:{platform_id}:{timestamp}`
-- **Credit Processing**: Automatic credit addition upon transaction confirmation
-- **Transaction Logging**: All top-ups recorded in `platform_credit_transactions` table with signature for audit trail
-
-**Implementation Notes:**
-- Use Solana Web3.js or similar SDK to send payment transactions
-- Include platform_id in memo for credit attribution
-- Monitor transaction confirmation before assuming credits are available
-- Keep API key secure - treat it like a production database password
-
 ## ZK-SNARK Circuit Details
 
-**About ZK-SNARKs:**
-
-ZK-SNARKs (Zero-Knowledge Succinct Non-Interactive Argument of Knowledge) are a form of cryptographic proof that allows one party to prove they possess certain information without revealing the information itself. This technology originated from **ZCash cryptocurrency research** and enables privacy-preserving verification.
-
-In zkProf, ZK-SNARKs prove that a photo was correctly encrypted with a specific key tied to a specific wallet, without revealing the encryption key itself.
-
-**zkProf's Circuit:** `circuits/zkpfp.circom`
+**Circuit:** `circuits/zkpfp.circom`
 
 **Inputs:**
+
 - `encryptionKeyBytes[32]`: AES-256 encryption key as byte array
 - `walletPublicKeyBytes[32]`: Solana wallet public key as byte array
 
 **Outputs:**
+
 - `commitment`: Poseidon hash of (encryptionKey + walletPublicKey)
 
 **Constraints:** ~260 (Poseidon hash operations)
@@ -465,6 +406,7 @@ In zkProf, ZK-SNARKs prove that a photo was correctly encrypted with a specific 
 ### Frontend Deployment
 
 1. Build production bundle:
+
 ```bash
 npm run build
 ```
@@ -512,23 +454,13 @@ supabase functions deploy <function-name>
 
 ## Security Model
 
-zkProf's security architecture combines multiple layers of cryptographic protection:
-
-- **ZK-SNARK Proofs** (from ZCash research): Cryptographic proof of encryption without revealing keys or plaintext
-- **RLS Policies**: Row Level Security on all Supabase tables based on wallet public key ownership
-- **Wallet Signatures**: All privileged operations require Ed25519 cryptographic wallet signatures
-- **AES-256-GCM Encryption**: Industry-standard symmetric encryption for photo data
-- **Time-Limited URLs**: Decrypted image URLs expire after 60 minutes to prevent long-term redistribution
-- **Screenshot Deterrents**: Multi-layered CSS + JS + visual protections during decryption (deterrent, not foolproof)
-- **API Key Hashing**: Platform API keys stored as SHA-256 hashes in database (never plaintext)
-- **NDA Signatures**: Viewer wallet signatures serve as cryptographic, immutable NDA acceptance proof
-- **On-Chain Proof**: Solana memo transactions provide tamper-proof commitment records
-
-**Privacy Guarantees:**
-- Photos encrypted client-side before upload (zero-knowledge to server)
-- Encryption keys never transmitted or stored on server
-- Deterministic key derivation enables recovery without server storage
-- ZK proofs verify encryption correctness without exposing sensitive data
+- **RLS Policies**: Row Level Security on all tables based on wallet public key ownership
+- **Wallet Signatures**: All privileged operations require cryptographic wallet signatures
+- **ZK-SNARK Proofs**: Cryptographic proof of encryption without revealing keys
+- **Time-Limited URLs**: Decrypted image URLs expire after 60 minutes
+- **Screenshot Deterrents**: CSS + JS + visual protections during decryption (deterrent, not foolproof)
+- **API Key Hashing**: Platform API keys stored as SHA-256 hashes in database
+- **NDA Signatures**: Viewer wallet signatures serve as cryptographic NDA acceptance proof
 
 ## Contributing
 
@@ -543,6 +475,7 @@ MIT License - See LICENSE file for details
 Built by [Arubaito](https://github.com/tenshijinn/arubaito)
 
 Powered by:
+
 - ZK-SNARKs (Circom + snarkjs)
 - Solana blockchain
 - ZCash cryptography research
