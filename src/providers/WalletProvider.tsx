@@ -10,6 +10,7 @@ interface Props {
   children: ReactNode;
 }
 
+// Force rebuild to pick up VITE_SOLANA_RPC_ENDPOINT secret
 export const SolanaWalletProvider: FC<Props> = ({ children }) => {
   const endpoint = useMemo(() => {
     // Use custom RPC endpoint from secrets if available, otherwise fall back to mainnet
