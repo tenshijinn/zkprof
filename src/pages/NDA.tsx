@@ -6,7 +6,7 @@ import { MobileBottomNav } from "@/components/MobileBottomNav";
 import { useWalletBalance } from "@/hooks/useWalletBalance";
 import { supabase } from "@/integrations/supabase/client";
 import { Shield, FileText, Scale, Globe } from "lucide-react";
-import arubaitoLogo from "@/assets/arubaito-logo.png";
+import arubaitoLogo from "@/assets/arubaito-logo-new.png";
 
 const NDA = () => {
   const { walletBalance, solPrice } = useWalletBalance();
