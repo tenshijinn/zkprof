@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import zkprofTop from "@/assets/zkprof-decrypt-3.png";
 import zkprofEncrypt from "@/assets/zkprof-encrypt-4.png";
 import zkprofLogoIndex from "@/assets/zkprof-logo-index.png";
-import arubaitoLogo from "@/assets/arubaito-logo.png";
+import arubaitoLogo from "@/assets/arubaito-logo-new.png";
 import zcashLogoFull from "@/assets/zcash-logo-full.svg";
 import solanaLogo from "@/assets/solana-logo.png";
 

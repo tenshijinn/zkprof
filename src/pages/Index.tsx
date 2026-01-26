@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Link } from "react-router-dom";
 import { Header } from "@/components/Header";
 import { MobileBottomNav } from "@/components/MobileBottomNav";
-import aruaitoLogo from "@/assets/arubaito-logo.png";
+import arubaitoLogo from "@/assets/arubaito-logo-new.png";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import {
   Connection,
@@ -773,7 +773,7 @@ const Index = () => {
         <div className="flex items-center gap-2">
           <span className="text-xs text-muted-foreground">zkProf by</span>
           <a href="https://arubaito.app" target="_blank" rel="noopener noreferrer">
-            <img src={aruaitoLogo} alt="Arubaito" className="h-4" />
+            <img src={arubaitoLogo} alt="Arubaito" className="h-4" />
           </a>
         </div>
         <a
