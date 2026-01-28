@@ -5,6 +5,7 @@ import zkprofTop from "@/assets/zkprof-decrypt-3.png";
 import zkprofEncrypt from "@/assets/zkprof-encrypt-4.png";
 import zkprofLogoIndex from "@/assets/zkprof-logo-index.png";
 import arubaitoLogo from "@/assets/arubaito-logo-new.png";
+import zypherpunkWinner from "@/assets/zypherpunk-winner.png";
 import zcashLogoFull from "@/assets/zcash-logo-full.svg";
 import solanaLogo from "@/assets/solana-logo.png";
 
@@ -94,19 +95,22 @@ const Landing = () => {
 
       {/* Footer branding - stacked on mobile, side by side on desktop */}
       <div className="absolute bottom-4 left-4 right-4 z-10 flex flex-col md:flex-row md:justify-between items-center gap-2 md:gap-0">
-        {/* ZK branding */}
-        <div className="flex items-center gap-1.5 h-5">
-          <span className="font-styrene text-xs text-black/70 leading-none">ZK-Snark Secured with</span>
-          <img src={zcashLogoFull} alt="ZCash" className="h-5 object-contain" />
-          <span className="font-styrene text-xs text-black/70 leading-none">using Solana x402</span>
-          <img src={solanaLogo} alt="Solana" className="h-5 object-contain" />
+        {/* ZK branding with hackathon winner badge */}
+        <div className="flex flex-col items-start gap-1.5">
+          <img src={zypherpunkWinner} alt="Zypherpunk Hackathon Winner" className="h-5 object-contain" />
+          <div className="flex items-center gap-1.5 h-5">
+            <span className="font-styrene text-xs text-black/70 leading-none">ZK-Snark Secured with</span>
+            <img src={zcashLogoFull} alt="ZCash" className="h-5 object-contain" />
+            <span className="font-styrene text-xs text-black/70 leading-none">using Solana x402</span>
+            <img src={solanaLogo} alt="Solana" className="h-5 object-contain" />
+          </div>
         </div>
         
         {/* By Arubaito - centered below on mobile, right on desktop */}
-        <div className="flex items-center gap-1.5 h-4">
+        <div className="flex items-center gap-1.5 h-6">
           <span className="font-styrene text-xs text-black/70 leading-none">by</span>
           <a href="https://arubaito.app" target="_blank" rel="noopener noreferrer">
-            <img src={arubaitoLogo} alt="Arubaito" className="h-2.5 object-contain hover:opacity-80 transition-opacity" />
+            <img src={arubaitoLogo} alt="Arubaito" className="h-5 object-contain hover:opacity-80 transition-opacity" />
           </a>
         </div>
       </div>
