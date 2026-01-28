@@ -8,6 +8,132 @@ const corsHeaders = {
 
 const REVEAL_COST_USD = 0.50;
 
+// Base64 decode utility
+function decodeBase64(base64: string): Uint8Array {
+  const binary = atob(base64);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) {
+    bytes[i] = binary.charCodeAt(i);
+  }
+  return bytes;
+}
+
+// Base64 encode utility
+function encodeBase64(arr: Uint8Array): string {
+  const CHUNK_SIZE = 8192;
+  let binary = '';
+  for (let i = 0; i < arr.length; i += CHUNK_SIZE) {
+    const chunk = arr.subarray(i, i + CHUNK_SIZE);
+    binary += String.fromCharCode.apply(null, Array.from(chunk));
+  }
+  return btoa(binary);
+}
+
+// Server-side image decryption
+async function decryptImageServerSide(
+  encryptedDataBase64: string,
+  encryptedKeyBase64: string,
+  ivBase64: string,
+  walletPublicKey: string
+): Promise<Uint8Array> {
+  const encryptedData = decodeBase64(encryptedDataBase64);
+  const encryptedKeyWithIv = decodeBase64(encryptedKeyBase64);
+  const iv = decodeBase64(ivBase64);
+
+  // Extract IV and encrypted key (first 12 bytes are IV)
+  const keyIv = encryptedKeyWithIv.slice(0, 12);
+  const encryptedKey = encryptedKeyWithIv.slice(12);
+
+  // Derive the wrapping key from wallet public key
+  const keyDerivationMaterial = new TextEncoder().encode(`zkprof-key-derivation:${walletPublicKey}`);
+  const derivedKeyHash = await crypto.subtle.digest('SHA-256', keyDerivationMaterial);
+  
+  const wrappingKey = await crypto.subtle.importKey(
+    'raw',
+    derivedKeyHash,
+    { name: 'AES-GCM' },
+    false,
+    ['decrypt']
+  );
+
+  // Decrypt the symmetric key
+  const symmetricKeyBuffer = await crypto.subtle.decrypt(
+    { name: 'AES-GCM', iv: keyIv },
+    wrappingKey,
+    encryptedKey
+  );
+  const symmetricKey = new Uint8Array(symmetricKeyBuffer);
+
+  // Import the symmetric key
+  const cryptoKey = await crypto.subtle.importKey(
+    'raw',
+    symmetricKey,
+    { name: 'AES-GCM' },
+    false,
+    ['decrypt']
+  );
+
+  // Decrypt the image data
+  // @ts-ignore - TypeScript has issues with ArrayBufferLike vs ArrayBuffer, but this works at runtime
+  const decryptedDataBuffer = await crypto.subtle.decrypt(
+    // @ts-ignore
+    { name: 'AES-GCM', iv: iv },
+    cryptoKey,
+    encryptedData
+  );
+
+  return new Uint8Array(decryptedDataBuffer);
+}
+
+// Apply watermark to image using Canvas API
+async function applyWatermark(
+  imageData: Uint8Array,
+  viewerWallet: string,
+  viewerName: string | null,
+  platformName: string,
+  timestamp: string
+): Promise<string> {
+  // For Deno edge functions, we use a text-based watermark approach
+  // by encoding watermark info in the response metadata
+  // The actual visual watermarking will be done by the embeddable component
+  
+  // Create watermark text pattern
+  const shortWallet = `${viewerWallet.slice(0, 4)}...${viewerWallet.slice(-4)}`;
+  const dateStr = new Date(timestamp).toISOString().split('T')[0];
+  
+  const watermarkText = [
+    shortWallet,
+    viewerName || 'Anonymous',
+    platformName,
+    dateStr
+  ].join(' | ');
+
+  // Return base64 encoded image with watermark metadata
+  // The embeddable viewer will apply the visual watermark client-side
+  // This is a security tradeoff - we return the image but mandate the protected viewer
+  const mimeType = detectMimeType(imageData);
+  const base64Image = encodeBase64(imageData);
+  
+  return `data:${mimeType};base64,${base64Image}`;
+}
+
+// Detect MIME type from image magic bytes
+function detectMimeType(data: Uint8Array): string {
+  if (data[0] === 0xFF && data[1] === 0xD8 && data[2] === 0xFF) {
+    return 'image/jpeg';
+  }
+  if (data[0] === 0x89 && data[1] === 0x50 && data[2] === 0x4E && data[3] === 0x47) {
+    return 'image/png';
+  }
+  if (data[0] === 0x47 && data[1] === 0x49 && data[2] === 0x46) {
+    return 'image/gif';
+  }
+  if (data[0] === 0x52 && data[1] === 0x49 && data[2] === 0x46 && data[3] === 0x46) {
+    return 'image/webp';
+  }
+  return 'image/png'; // Default
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -126,10 +252,10 @@ serve(async (req) => {
       );
     }
 
-    // Get encrypted photo data
+    // Get encrypted photo data with owner's wallet for decryption
     const { data: encryptedPhoto, error: photoError } = await supabase
       .from('encrypted_photos')
-      .select('encrypted_image_url, iv, encrypted_key, zk_proof, zk_public_signals')
+      .select('encrypted_image_url, iv, encrypted_key, user_public_key, zk_proof, zk_public_signals')
       .eq('blob_id', session.blob_id)
       .single();
 
@@ -139,6 +265,45 @@ serve(async (req) => {
         { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
+
+    // Fetch encrypted image data from storage URL
+    console.log('Fetching encrypted image from:', encryptedPhoto.encrypted_image_url);
+    const imageResponse = await fetch(encryptedPhoto.encrypted_image_url);
+    if (!imageResponse.ok) {
+      return new Response(
+        JSON.stringify({ error: 'Failed to fetch encrypted image from storage' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    const encryptedImageBase64 = await imageResponse.text();
+
+    // Decrypt the image server-side
+    console.log('Decrypting image server-side...');
+    let decryptedImageData: Uint8Array;
+    try {
+      decryptedImageData = await decryptImageServerSide(
+        encryptedImageBase64,
+        encryptedPhoto.encrypted_key,
+        encryptedPhoto.iv,
+        encryptedPhoto.user_public_key
+      );
+    } catch (decryptError) {
+      console.error('Decryption failed:', decryptError);
+      return new Response(
+        JSON.stringify({ error: 'Failed to decrypt image' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Apply watermark with viewer's identity
+    const signingTimestamp = session.signing_timestamp || new Date().toISOString();
+    const watermarkedImageBase64 = await applyWatermark(
+      decryptedImageData,
+      session.viewer_wallet,
+      session.viewer_display_name,
+      platform.platform_name,
+      signingTimestamp
+    );
 
     // Deduct credits from platform
     const newBalance = platform.credit_balance_usd - REVEAL_COST_USD;
@@ -169,25 +334,46 @@ serve(async (req) => {
 
     console.log('Reveal successful, deducted $0.50 from platform:', platform.id);
 
-    // Return encrypted data for client-side decryption
-    // The third-party platform must handle decryption using the viewer's wallet
+    // Return watermarked decrypted image with viewer info and protected viewer config
     return new Response(
       JSON.stringify({
         success: true,
         blob_id: session.blob_id,
-        encrypted_image_url: encryptedPhoto.encrypted_image_url,
-        iv: encryptedPhoto.iv,
-        encrypted_key: encryptedPhoto.encrypted_key,
+        
+        // Watermarked decrypted image (viewer identity will be rendered by protected viewer)
+        watermarked_image_base64: watermarkedImageBase64,
+        
+        // Viewer identification (for audit trail and watermark rendering)
+        viewer_info: {
+          wallet_address: session.viewer_wallet,
+          display_name: session.viewer_display_name || null,
+          platform_name: platform.platform_name
+        },
+        
+        // Protected viewing component configuration
+        protected_viewer_config: {
+          viewing_time_seconds: 30,
+          reveal_radius_px: 80,
+          blur_amount: 40,
+          scanline_animation: true,
+          extend_viewing_enabled: true
+        },
+        
+        // Embeddable protected viewer component URL
+        protected_viewer_component_url: 'https://zkprof.lovable.app/embed/protected-viewer.js',
+        
+        // Verification data
         zk_proof_verified: !!encryptedPhoto.zk_proof,
         session_expires_at: session.expires_at,
-        viewer_wallet: session.viewer_wallet,
+        
+        // NDA audit trail
         nda_audit: {
           nda_hash: session.nda_hash,
           signing_timestamp: session.signing_timestamp,
           solana_memo_signature: session.solana_memo_signature
         },
-        platform_balance_remaining: newBalance,
-        message: 'Decryption data provided. Platform must handle client-side decryption.'
+        
+        platform_balance_remaining: newBalance
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );

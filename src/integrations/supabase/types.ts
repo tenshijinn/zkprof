@@ -68,6 +68,7 @@ export type Database = {
           signer_user_agent: string | null
           signing_timestamp: string | null
           solana_memo_signature: string | null
+          viewer_display_name: string | null
           viewer_wallet: string
         }
         Insert: {
@@ -85,6 +86,7 @@ export type Database = {
           signer_user_agent?: string | null
           signing_timestamp?: string | null
           solana_memo_signature?: string | null
+          viewer_display_name?: string | null
           viewer_wallet: string
         }
         Update: {
@@ -102,6 +104,7 @@ export type Database = {
           signer_user_agent?: string | null
           signing_timestamp?: string | null
           solana_memo_signature?: string | null
+          viewer_display_name?: string | null
           viewer_wallet?: string
         }
         Relationships: [
@@ -282,6 +285,41 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "platform_credit_transactions_platform_id_fkey"
+            columns: ["platform_id"]
+            isOneToOne: false
+            referencedRelation: "platform_registrations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      platform_profile_links: {
+        Row: {
+          blob_id: string
+          created_at: string
+          id: string
+          platform_id: string
+          platform_user_id: string
+          wallet_address: string
+        }
+        Insert: {
+          blob_id: string
+          created_at?: string
+          id?: string
+          platform_id: string
+          platform_user_id: string
+          wallet_address: string
+        }
+        Update: {
+          blob_id?: string
+          created_at?: string
+          id?: string
+          platform_id?: string
+          platform_user_id?: string
+          wallet_address?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "platform_profile_links_platform_id_fkey"
             columns: ["platform_id"]
             isOneToOne: false
             referencedRelation: "platform_registrations"
