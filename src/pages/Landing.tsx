@@ -8,50 +8,41 @@ import arubaitoLogo from "@/assets/arubaito-logo-new.png";
 import zypherpunkWinner from "@/assets/zypherpunk-winner.png";
 import zcashLogoFull from "@/assets/zcash-logo-full.svg";
 import solanaLogo from "@/assets/solana-logo.png";
-
 const Landing = () => {
   const [mouseX, setMouseX] = useState(50); // percentage across screen
   const [imageRevealX, setImageRevealX] = useState(50); // percentage across image
   const imageContainerRef = useRef<HTMLDivElement>(null);
-
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       // Calculate mouse position as percentage of screen width for the line
-      const screenPercentage = (e.clientX / window.innerWidth) * 100;
+      const screenPercentage = e.clientX / window.innerWidth * 100;
       setMouseX(screenPercentage);
 
       // Calculate reveal position relative to image container
       if (imageContainerRef.current) {
         const rect = imageContainerRef.current.getBoundingClientRect();
         if (e.clientX >= rect.left && e.clientX <= rect.right) {
-          const imagePercentage = ((e.clientX - rect.left) / rect.width) * 100;
+          const imagePercentage = (e.clientX - rect.left) / rect.width * 100;
           setImageRevealX(Math.max(0, Math.min(100, imagePercentage)));
         }
       }
     };
-
     window.addEventListener("mousemove", handleMouseMove);
     return () => window.removeEventListener("mousemove", handleMouseMove);
   }, []);
-
-  return (
-    <div
-      className="min-h-screen text-foreground flex flex-col md:flex-row md:items-end md:justify-center relative p-0 overflow-hidden"
-      style={{ backgroundColor: "#faf1e1" }}
-    >
+  return <div className="min-h-screen text-foreground flex flex-col md:flex-row md:items-end md:justify-center relative p-0 overflow-hidden" style={{
+    backgroundColor: "#faf1e1"
+  }}>
       {/* Vertical line that follows mouse */}
-      <div
-        className="fixed top-0 bottom-0 w-[2px] bg-primary z-20 pointer-events-none"
-        style={{ left: `${mouseX}%`, transform: "translateX(-50%)" }}
-      >
+      <div className="fixed top-0 bottom-0 w-[2px] bg-primary z-20 pointer-events-none" style={{
+      left: `${mouseX}%`,
+      transform: "translateX(-50%)"
+    }}>
         {/* ZK-Encrypted text - positioned lower on mobile to avoid overlap */}
-        <span
-          className="absolute top-[60%] md:top-6 left-4 text-primary font-styrene font-black text-sm tracking-widest whitespace-nowrap"
-          style={{
-            writingMode: "vertical-rl",
-            textOrientation: "mixed",
-          }}
-        >
+        <span className="absolute top-[60%] md:top-6 left-4 text-primary font-styrene font-black text-sm tracking-widest whitespace-nowrap" style={{
+        writingMode: "vertical-rl",
+        textOrientation: "mixed"
+      }}>
           ZK-ENCRYPTED
         </span>
       </div>
@@ -70,20 +61,14 @@ const Landing = () => {
       </div>
 
       {/* Center: Parallax Image - centered on mobile, bottom on desktop */}
-      <div
-        ref={imageContainerRef}
-        className="relative aspect-square w-[80%] md:w-full max-w-[600px] overflow-hidden rounded-3xl md:rounded-t-3xl md:rounded-b-none my-auto md:my-0 md:mt-auto mx-auto"
-      >
+      <div ref={imageContainerRef} className="relative aspect-square w-[80%] md:w-full max-w-[600px] overflow-hidden rounded-3xl md:rounded-t-3xl md:rounded-b-none my-auto md:my-0 md:mt-auto mx-auto">
         {/* Bottom layer - encrypted version (always visible) */}
         <img src={zkprofEncrypt} alt="Encrypted profile" className="absolute inset-0 w-full h-full object-cover" />
 
         {/* Top layer - normal version (revealed by mouse) */}
-        <div
-          className="absolute inset-0 transition-none"
-          style={{
-            clipPath: `polygon(0 0, ${imageRevealX}% 0, ${imageRevealX}% 100%, 0 100%)`,
-          }}
-        >
+        <div className="absolute inset-0 transition-none" style={{
+        clipPath: `polygon(0 0, ${imageRevealX}% 0, ${imageRevealX}% 100%, 0 100%)`
+      }}>
           <img src={zkprofTop} alt="Normal profile" className="w-full h-full object-cover" />
         </div>
       </div>
@@ -97,7 +82,7 @@ const Landing = () => {
       <div className="absolute bottom-4 left-4 right-4 z-10 flex flex-col md:flex-row md:justify-between items-center gap-2 md:gap-0">
         {/* ZK branding with hackathon winner badge */}
         <div className="flex flex-col items-start gap-1.5">
-          <img src={zypherpunkWinner} alt="Zypherpunk Hackathon Winner" className="h-5 object-contain" />
+          <img alt="Zypherpunk Hackathon Winner" className="h-5 object-contain" src="/lovable-uploads/1fbc5601-afc2-46c8-be64-2ae2a5edc7c5.png" />
           <div className="flex items-center gap-1.5 h-5">
             <span className="font-styrene text-xs text-black/70 leading-none">ZK-Snark Secured with</span>
             <img src={zcashLogoFull} alt="ZCash" className="h-5 object-contain" />
@@ -114,8 +99,6 @@ const Landing = () => {
           </a>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default Landing;
