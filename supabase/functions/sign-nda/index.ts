@@ -31,10 +31,11 @@ serve(async (req) => {
       signature, 
       nda_hash,
       consent_given,
-      solana_memo_signature 
+      solana_memo_signature,
+      viewer_display_name // Optional: viewer's name/username from the platform
     } = await req.json();
 
-    console.log('Signing NDA:', { blob_id, platform_id, viewer_wallet, nda_hash });
+    console.log('Signing NDA:', { blob_id, platform_id, viewer_wallet, nda_hash, viewer_display_name });
 
     // Validate required fields
     if (!blob_id || !platform_id || !viewer_wallet || !signature || !nda_hash) {
@@ -116,6 +117,7 @@ serve(async (req) => {
         blob_id,
         platform_id,
         viewer_wallet,
+        viewer_display_name: viewer_display_name || null, // Store optional display name
         nda_message: message,
         nda_signature: signature,
         nda_hash,
@@ -149,6 +151,7 @@ serve(async (req) => {
         audit_trail: {
           nda_hash,
           signer_wallet: viewer_wallet,
+          signer_display_name: viewer_display_name || null,
           signing_timestamp: signingTimestamp,
           solana_memo_signature: solana_memo_signature || 'Not provided'
         }

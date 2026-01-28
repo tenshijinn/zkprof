@@ -26,3 +26,9 @@ verify_jwt = false
 
 [functions.platform-topup]
 verify_jwt = false
+
+[functions.get-user-zkpfps]
+verify_jwt = false
+
+[functions.link-zkpfp-to-profile]
+verify_jwt = false
