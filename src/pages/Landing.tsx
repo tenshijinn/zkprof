@@ -82,7 +82,7 @@ const Landing = () => {
       <div className="absolute bottom-4 left-4 right-4 z-10 flex flex-col md:flex-row md:justify-between items-center gap-2 md:gap-0">
         {/* ZK branding with hackathon winner badge */}
         <div className="flex flex-col items-start gap-1.5">
-          <img alt="Zypherpunk Hackathon Winner" className="h-5 object-contain" src="/lovable-uploads/1fbc5601-afc2-46c8-be64-2ae2a5edc7c5.png" />
+          <img alt="Zypherpunk Hackathon Winner" className="h-8 object-contain" src="/lovable-uploads/1fbc5601-afc2-46c8-be64-2ae2a5edc7c5.png" />
           <div className="flex items-center gap-1.5 h-5">
             <span className="font-styrene text-xs text-black/70 leading-none">ZK-Snark Secured with</span>
             <img src={zcashLogoFull} alt="ZCash" className="h-5 object-contain" />
