@@ -9,6 +9,7 @@ import { Link } from "react-router-dom";
 import { Header } from "@/components/Header";
 import { MobileBottomNav } from "@/components/MobileBottomNav";
 import arubaitoLogo from "@/assets/arubaito-logo-new.png";
+import zypherpunkWinner from "@/assets/zypherpunk-winner.png";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import {
   Connection,
@@ -757,6 +758,7 @@ const Index = () => {
 
             {/* Security Info */}
             <div className="flex flex-col items-center gap-2 pt-4">
+              <img src={zypherpunkWinner} alt="Zypherpunk Hackathon Winner" className="h-6 mb-2" />
               <p className="text-xs text-muted-foreground">ZK-Snark Secured with</p>
               <div className="flex items-center gap-4">
                 <img src={zcashLogo} alt="ZCash" className="h-8" />
