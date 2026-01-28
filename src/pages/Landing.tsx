@@ -94,7 +94,7 @@ const Landing = () => {
         
         {/* Zypherpunk Hackathon Winner badge */}
         <div className="flex items-center gap-3 bg-transparent rounded-xl px-4 py-3 border-[3px] border-[#181818]">
-          <img src={zypherpunkWinner} alt="Zypherpunk" className="h-7 w-7 object-contain" />
+          <img alt="Zypherpunk" className="h-7 w-7 object-contain" src="/lovable-uploads/10e1c4ce-7c44-404b-9643-edcbbc6597ea.png" />
           <div className="flex flex-col">
             <span className="font-styrene font-black text-xs text-black/90 tracking-wide">ZYPHERPUNK</span>
             <span className="font-styrene text-[10px] text-black/70 leading-tight">Hackathon Winner</span>
