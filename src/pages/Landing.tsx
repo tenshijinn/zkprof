@@ -81,19 +81,19 @@ const Landing = () => {
       {/* Bottom left badges - stacked boxes */}
       <div className="absolute bottom-6 left-6 z-10 flex flex-col gap-2">
         {/* Solana x402 badge */}
-        <div className="flex items-center gap-3 bg-[#f5efe6] rounded-xl px-4 py-3 shadow-sm border border-black/5">
+        <div className="flex items-center gap-3 bg-transparent rounded-xl px-4 py-3 border-[3px] border-[#181818]">
           <img src={solanaLogo} alt="Solana" className="h-6 w-6 object-contain" />
           <span className="font-styrene text-sm text-black/80">Solana x402</span>
         </div>
         
         {/* ZK-Snark Secured badge */}
-        <div className="flex items-center gap-3 bg-[#f5efe6] rounded-xl px-4 py-3 shadow-sm border border-black/5">
+        <div className="flex items-center gap-3 bg-transparent rounded-xl px-4 py-3 border-[3px] border-[#181818]">
           <img src={zcashLogoFull} alt="ZCash" className="h-6 w-6 object-contain" />
           <span className="font-styrene text-sm text-black/80">ZK-Snark Secured</span>
         </div>
         
         {/* Zypherpunk Hackathon Winner badge */}
-        <div className="flex items-center gap-3 bg-[#f5efe6] rounded-xl px-4 py-3 shadow-sm border border-black/5">
+        <div className="flex items-center gap-3 bg-transparent rounded-xl px-4 py-3 border-[3px] border-[#181818]">
           <img src={zypherpunkWinner} alt="Zypherpunk" className="h-7 w-7 object-contain" />
           <div className="flex flex-col">
             <span className="font-styrene font-black text-xs text-black/90 tracking-wide">ZYPHERPUNK</span>
