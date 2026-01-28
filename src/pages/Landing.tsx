@@ -78,26 +78,37 @@ const Landing = () => {
         <img src={zkprofLogoIndex} alt="zkProf" className="h-7 object-contain" />
       </div>
 
-      {/* Footer branding - stacked on mobile, side by side on desktop */}
-      <div className="absolute bottom-4 left-4 right-4 z-10 flex flex-col md:flex-row md:justify-between items-center gap-2 md:gap-0">
-        {/* ZK branding with hackathon winner badge */}
-        <div className="flex flex-col items-start gap-1.5">
-          <img alt="Zypherpunk Hackathon Winner" className="h-8 object-contain" src="/lovable-uploads/1fbc5601-afc2-46c8-be64-2ae2a5edc7c5.png" />
-          <div className="flex items-center gap-1.5 h-5">
-            <span className="font-styrene text-xs text-black/70 leading-none">ZK-Snark Secured with</span>
-            <img src={zcashLogoFull} alt="ZCash" className="h-5 object-contain" />
-            <span className="font-styrene text-xs text-black/70 leading-none">using Solana x402</span>
-            <img src={solanaLogo} alt="Solana" className="h-5 object-contain" />
-          </div>
+      {/* Bottom left badges - stacked boxes */}
+      <div className="absolute bottom-6 left-6 z-10 flex flex-col gap-2">
+        {/* Solana x402 badge */}
+        <div className="flex items-center gap-3 bg-[#f5efe6] rounded-xl px-4 py-3 shadow-sm border border-black/5">
+          <img src={solanaLogo} alt="Solana" className="h-6 w-6 object-contain" />
+          <span className="font-styrene text-sm text-black/80">Solana x402</span>
         </div>
         
-        {/* By Arubaito - centered below on mobile, right on desktop */}
-        <div className="flex items-center gap-1.5 h-6">
-          <span className="font-styrene text-xs text-black/70 leading-none">by</span>
-          <a href="https://arubaito.app" target="_blank" rel="noopener noreferrer">
-            <img src={arubaitoLogo} alt="Arubaito" className="h-5 object-contain hover:opacity-80 transition-opacity" />
-          </a>
+        {/* ZK-Snark Secured badge */}
+        <div className="flex items-center gap-3 bg-[#f5efe6] rounded-xl px-4 py-3 shadow-sm border border-black/5">
+          <img src={zcashLogoFull} alt="ZCash" className="h-6 w-6 object-contain" />
+          <span className="font-styrene text-sm text-black/80">ZK-Snark Secured</span>
         </div>
+        
+        {/* Zypherpunk Hackathon Winner badge */}
+        <div className="flex items-center gap-3 bg-[#f5efe6] rounded-xl px-4 py-3 shadow-sm border border-black/5">
+          <img src={zypherpunkWinner} alt="Zypherpunk" className="h-7 w-7 object-contain" />
+          <div className="flex flex-col">
+            <span className="font-styrene font-black text-xs text-black/90 tracking-wide">ZYPHERPUNK</span>
+            <span className="font-styrene text-[10px] text-black/70 leading-tight">Hackathon Winner</span>
+            <span className="font-styrene text-[9px] text-black/50 leading-tight">Network School | Tachyon</span>
+          </div>
+        </div>
+      </div>
+      
+      {/* By Arubaito - bottom right */}
+      <div className="absolute bottom-6 right-6 z-10 flex items-center gap-1.5">
+        <span className="font-styrene text-xs text-black/70 leading-none">by</span>
+        <a href="https://arubaito.app" target="_blank" rel="noopener noreferrer">
+          <img src={arubaitoLogo} alt="Arubaito" className="h-5 object-contain hover:opacity-80 transition-opacity" />
+        </a>
       </div>
     </div>;
 };
