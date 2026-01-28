@@ -147,7 +147,7 @@ const NDA = () => {
           <div className="flex items-center gap-2">
             <span className="text-xs text-muted-foreground">by</span>
             <a href="https://arubaito.app" target="_blank" rel="noopener noreferrer">
-              <img src={arubaitoLogo} alt="Arubaito" className="h-4" />
+              <img src={arubaitoLogo} alt="Arubaito" className="h-6" />
             </a>
           </div>
         </div>
