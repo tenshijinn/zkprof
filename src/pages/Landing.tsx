@@ -78,24 +78,24 @@ const Landing = () => {
         <img src={zkprofLogoIndex} alt="zkProf" className="h-7 object-contain" />
       </div>
 
-      {/* Bottom left badges - stacked boxes */}
-      <div className="absolute bottom-6 left-6 z-10 flex flex-col gap-2">
+      {/* Bottom badges - horizontal row on mobile, stacked on desktop */}
+      <div className="absolute bottom-4 left-4 right-4 md:left-6 md:right-auto md:bottom-6 z-10 flex flex-row md:flex-col gap-1.5 md:gap-2">
         {/* Solana x402 badge */}
-        <div className="flex items-center gap-3 bg-transparent rounded-xl px-4 py-3 border-[3px] border-[#181818]">
-          <img src={solanaLogo} alt="Solana" className="h-6 w-6 object-contain" />
-          <span className="font-styrene text-sm text-black/80">Solana x402</span>
+        <div className="flex items-center gap-1.5 md:gap-3 bg-transparent rounded-lg md:rounded-xl px-2 py-1.5 md:px-4 md:py-3 border-2 md:border-[3px] border-[#181818]">
+          <img src={solanaLogo} alt="Solana" className="h-4 w-4 md:h-6 md:w-6 object-contain" />
+          <span className="font-styrene text-[8px] md:text-sm text-black/80 whitespace-nowrap">Solana x402</span>
         </div>
         
         {/* ZK-Snark Secured badge */}
-        <div className="flex items-center gap-3 bg-transparent rounded-xl px-4 py-3 border-[3px] border-[#181818]">
-          <img src={zcashLogoFull} alt="ZCash" className="h-6 w-6 object-contain" />
-          <span className="font-styrene text-sm text-black/80">ZK-Snark Secured</span>
+        <div className="flex items-center gap-1.5 md:gap-3 bg-transparent rounded-lg md:rounded-xl px-2 py-1.5 md:px-4 md:py-3 border-2 md:border-[3px] border-[#181818]">
+          <img src={zcashLogoFull} alt="ZCash" className="h-4 w-4 md:h-6 md:w-6 object-contain" />
+          <span className="font-styrene text-[8px] md:text-sm text-black/80 whitespace-nowrap">ZK-Snark Secured</span>
         </div>
         
         {/* Zypherpunk Hackathon Winner badge */}
-        <div className="flex items-center gap-3 bg-transparent rounded-xl px-4 py-3 border-[3px] border-[#181818]">
-          <img alt="Zypherpunk" className="h-7 w-7 object-contain" src="/lovable-uploads/10e1c4ce-7c44-404b-9643-edcbbc6597ea.png" />
-          <div className="flex flex-col">
+        <div className="flex items-center gap-1.5 md:gap-3 bg-transparent rounded-lg md:rounded-xl px-2 py-1.5 md:px-4 md:py-3 border-2 md:border-[3px] border-[#181818]">
+          <img alt="Zypherpunk" className="h-4 w-4 md:h-7 md:w-7 object-contain" src="/lovable-uploads/10e1c4ce-7c44-404b-9643-edcbbc6597ea.png" />
+          <div className="hidden md:flex flex-col">
             <span className="font-styrene font-black text-xs text-black/90 tracking-wide">ZYPHERPUNK</span>
             <span className="font-styrene text-[10px] text-black/70 leading-tight">Hackathon Winner</span>
             <span className="font-styrene text-[9px] text-black/50 leading-tight">Network School | Tachyon</span>
